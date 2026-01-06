@@ -15,15 +15,20 @@ import {
   FiMapPin
 } from 'react-icons/fi';
 import './About.css';
+import { client } from '../sanityClient';
+import { aboutPageQuery } from '../queries/aboutPageQuery';
 
 const About = () => {
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
+  const highlightBrand = (text) =>
+    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
 
   // State to track if brands have been animated in this page visit
   const [brandsAnimated, setBrandsAnimated] = useState(false);
+  const [aboutData, setAboutData] = useState(null);
 
   // Add intersection observer for brand items
   const [brandsRef, brandsInView] = useInView({
@@ -37,6 +42,10 @@ const About = () => {
       setBrandsAnimated(true);
     }
   }, [brandsInView, brandsAnimated]);
+
+  useEffect(() => {
+    client.fetch(aboutPageQuery).then(setAboutData);
+  }, []);
 
   const values = [
     {
@@ -123,6 +132,48 @@ const About = () => {
     { name: "PARKER FILTERS & INSTRUMENTS", image: process.env.PUBLIC_URL + "/images/brands/parker-filters-logo.png" }
   ];
 
+  // CMS-driven replacements with safe fallbacks
+  const valuesFromCMS = aboutData?.coreValues?.values
+    ?.filter(v => v?.enabled !== false)
+    ?.map((v, idx) => ({
+      icon: values[idx % values.length]?.icon || <FiCheckCircle />,
+      title: v?.title || values[idx % values.length]?.title || '',
+      description: v?.description || values[idx % values.length]?.description || ''
+    }));
+  const valuesToRender = valuesFromCMS && valuesFromCMS.length ? valuesFromCMS : values;
+
+  const coreServicesItems = aboutData?.whyChoose?.services?.coreServices?.items
+    ?.filter(item => item?.enabled !== false)
+    ?.map(item => item?.title || '') || services;
+
+  const sectorServicesItems = aboutData?.whyChoose?.services?.sectorServices?.items
+    ?.filter(item => item?.enabled !== false)
+    ?.map(item => item?.title || '') || sectorSolutions;
+
+  const valueAddedItems = aboutData?.whyChoose?.services?.valueAdded?.items
+    ?.filter(item => item?.enabled !== false)
+    ?.map(item => item?.title || '') || valueAddedServices;
+
+  const brandsFromCMS = aboutData?.brandPartners?.logos
+    ?.filter(l => l?.enabled !== false)
+    ?.map(l => ({
+      name: l?.image?.alt || 'Brand',
+      image: l?.image?.asset?.url
+    }));
+  const brandsToRender = brandsFromCMS && brandsFromCMS.length ? brandsFromCMS : brands;
+
+  const defaultAchievementIcons = [<FiUsers />, <FiClock />, <FiGlobe />, <FiAward />];
+  const achievementsFromCMS = aboutData?.contactSection?.stats
+    ?.filter(s => s?.enabled !== false)
+    ?.map((s, idx) => ({
+      number: s?.number || achievements[idx % achievements.length]?.number || '',
+      label: s?.label || achievements[idx % achievements.length]?.label || '',
+      icon: defaultAchievementIcons[idx % defaultAchievementIcons.length]
+    }));
+  const achievementsToRender = achievementsFromCMS && achievementsFromCMS.length
+    ? achievementsFromCMS
+    : achievements;
+
   return (
     <div className="about-page">
       {/* Hero Section */}
@@ -134,14 +185,21 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="gradient-text">About <span className="gold-text">Al Safa Global</span></h1>
+            <h1 className="gradient-text" dangerouslySetInnerHTML={{ __html: highlightBrand(aboutData?.pageTitle || 'About Al Safa Global') }} />
 
-            <p>
-              Al Safa Global General Trading FZ LLC is a UAE-based company specializing in comprehensive 
-              procurement and supply chain solutions. Headquartered in Ras Al Khaimah, we proudly serve 
-              businesses and projects within the UAE and internationally — across the Construction, 
-              Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors.
-            </p>
+            {aboutData?.introText?.length
+              ? aboutData.introText.map((p, i) => (
+                  <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                ))
+              : (
+                <p>
+                  Al Safa Global General Trading FZ LLC is a UAE-based company specializing in comprehensive 
+                  procurement and supply chain solutions. Headquartered in Ras Al Khaimah, we proudly serve 
+                  businesses and projects within the UAE and internationally — across the Construction, 
+                  Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors.
+                </p>
+              )
+            }
           </motion.div>
         </div>
       </section>
@@ -160,12 +218,19 @@ const About = () => {
               <div className="card-icon">
                 <FiEye />
               </div>
-              <h3>Our Vision</h3>
-              <p>
-                To be a globally trusted procurement partner, known for delivering quality products, 
-                innovative solutions, and exceptional service that drive the success of projects and 
-                businesses across industries.
-              </p>
+              <h3>{aboutData?.vision?.title || 'Our Vision'}</h3>
+              {aboutData?.vision?.text?.length
+                ? aboutData.vision.text.map((p, i) => (
+                    <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                  ))
+                : (
+                  <p>
+                    To be a globally trusted procurement partner, known for delivering quality products, 
+                    innovative solutions, and exceptional service that drive the success of projects and 
+                    businesses across industries.
+                  </p>
+                )
+              }
             </motion.div>
 
             <motion.div 
@@ -178,14 +243,21 @@ const About = () => {
               <div className="card-icon">
                 <FiTarget />
               </div>
-              <h3>Our Mission</h3>
-              <p>
-                To provide reliable, cost-effective sourcing and supply solutions for businesses in 
-                the UAE and across the globe. To represent and deliver world-renowned brands and 
-                products that meet the highest standards of quality and performance. To build long-term 
-                partnerships by exceeding client expectations with personalized service, integrity, 
-                and commitment to excellence.
-              </p>
+              <h3>{aboutData?.mission?.title || 'Our Mission'}</h3>
+              {aboutData?.mission?.text?.length
+                ? aboutData.mission.text.map((p, i) => (
+                    <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                  ))
+                : (
+                  <p>
+                    To provide reliable, cost-effective sourcing and supply solutions for businesses in 
+                    the UAE and across the globe. To represent and deliver world-renowned brands and 
+                    products that meet the highest standards of quality and performance. To build long-term 
+                    partnerships by exceeding client expectations with personalized service, integrity, 
+                    and commitment to excellence.
+                  </p>
+                )
+              }
             </motion.div>
           </div>
         </div>
@@ -201,16 +273,16 @@ const About = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Our Core Values</h2>
+            <h2>{aboutData?.coreValues?.title || 'Our Core Values'}</h2>
             <p className="section-subtitle">
-              The principles that guide our business and relationships
+              {aboutData?.coreValues?.subtitle || 'The principles that guide our business and relationships'}
             </p>
           </motion.div>
 
           <div className="values-grid">
-            {values.map((value, index) => (
+            {valuesToRender.map((value, index) => (
               <motion.div
-                key={value.title}
+                key={value.title || index}
                 className="value-card"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -238,77 +310,28 @@ const About = () => {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <h2>Why Choose <span className="gold-text">Al Safa Global</span>?</h2>
+            <h2 dangerouslySetInnerHTML={{ __html: highlightBrand(aboutData?.whyChoose?.title || 'Why Choose Al Safa Global?') }} />
             <p className="section-subtitle">
-              We combine industry expertise with innovative solutions to deliver exceptional value
+              {aboutData?.whyChoose?.subtitle || 'We combine industry expertise with innovative solutions to deliver exceptional value'}
             </p>
           </motion.div>
 
           <div className="features-grid">
-            <motion.div 
-              className="feature-item"
-              initial={{ opacity: 0, x: -30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <FiCheckCircle className="feature-icon" />
-              <div className="feature-content">
-                <h4>Global Sourcing Network</h4>
-                <p>Direct access to reputed brands and suppliers worldwide</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="feature-item"
-              initial={{ opacity: 0, x: -30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <FiCheckCircle className="feature-icon" />
-              <div className="feature-content">
-                <h4>End-to-End Solutions</h4>
-                <p>Complete procurement and logistics management services</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="feature-item"
-              initial={{ opacity: 0, x: -30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <FiCheckCircle className="feature-icon" />
-              <div className="feature-content">
-                <h4>Competitive Pricing</h4>
-                <p>Cost-effective solutions without compromising quality</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="feature-item"
-              initial={{ opacity: 0, x: -30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <FiCheckCircle className="feature-icon" />
-              <div className="feature-content">
-                <h4>Responsive Service</h4>
-                <p>Quick turnaround times and commitment to deadlines</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="feature-item"
-              initial={{ opacity: 0, x: -30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <FiCheckCircle className="feature-icon" />
-              <div className="feature-content">
-                <h4>Industry Expertise</h4>
-                <p>Experienced team with deep industry-specific knowledge</p>
-              </div>
-            </motion.div>
+            {(aboutData?.whyChoose?.features?.filter(f => f?.enabled !== false) || []).map((f, idx) => (
+              <motion.div 
+                key={idx}
+                className="feature-item"
+                initial={{ opacity: 0, x: -30 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.1 + idx * 0.1 }}
+              >
+                <FiCheckCircle className="feature-icon" />
+                <div className="feature-content">
+                  <h4>{f?.title || ''}</h4>
+                  <p>{f?.description || ''}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -323,16 +346,16 @@ const About = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Core Procurement & Supply Chain Services</h2>
+            <h2>{aboutData?.whyChoose?.services?.coreServices?.title || 'Core Procurement & Supply Chain Services'}</h2>
             <p className="section-subtitle">
-              Comprehensive solutions tailored to your business needs
+              {aboutData?.whyChoose?.services?.coreServices?.subtitle || 'Comprehensive solutions tailored to your business needs'}
             </p>
           </motion.div>
 
           <div className="services-grid">
-            {services.map((service, index) => (
+            {coreServicesItems.map((service, index) => (
               <motion.div
-                key={service}
+                key={service || index}
                 className="service-item"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -357,16 +380,16 @@ const About = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Sector-Specific Supply Solutions</h2>
+            <h2>{aboutData?.whyChoose?.services?.sectorServices?.title || 'Sector-Specific Supply Solutions'}</h2>
             <p className="section-subtitle">
-              Specialized procurement services for different industries
+              {aboutData?.whyChoose?.services?.sectorServices?.subtitle || 'Specialized procurement services for different industries'}
             </p>
           </motion.div>
 
           <div className="solutions-grid">
-            {sectorSolutions.map((solution, index) => (
+            {sectorServicesItems.map((solution, index) => (
               <motion.div
-                key={solution}
+                key={solution || index}
                 className="solution-item"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -391,16 +414,16 @@ const About = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Value-Added Services</h2>
+            <h2>{aboutData?.whyChoose?.services?.valueAdded?.title || 'Value-Added Services'}</h2>
             <p className="section-subtitle">
-              Additional benefits that set us apart from the competition
+              {aboutData?.whyChoose?.services?.valueAdded?.subtitle || 'Additional benefits that set us apart from the competition'}
             </p>
           </motion.div>
 
           <div className="value-services-grid">
-            {valueAddedServices.map((service, index) => (
+            {valueAddedItems.map((service, index) => (
               <motion.div
-                key={service}
+                key={service || index}
                 className="value-service-item"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -425,10 +448,9 @@ const About = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Trusted Brand Partners</h2>
+            <h2>{aboutData?.brandPartners?.title || 'Trusted Brand Partners'}</h2>
             <p className="section-subtitle">
-              We source and supply materials from a wide network of reputed international brands, 
-              ensuring genuine quality and trusted performance
+              {aboutData?.brandPartners?.subtitle || 'We source and supply materials from a wide network of reputed international brands, ensuring genuine quality and trusted performance'}
             </p>
           </motion.div>
 
@@ -439,9 +461,9 @@ const About = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {brands.map((brand, index) => (
+            {(brandsToRender || []).map((brand, index) => (
               <motion.div
-                key={brand.name}
+                key={brand.name || index}
                 className={`brand-item ${brandsAnimated ? 'in-view' : ''}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={brandsAnimated ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
@@ -450,7 +472,7 @@ const About = () => {
               >
                 <img 
                   src={brand.image} 
-                  alt={brand.name}
+                  alt={brand.name || ''}
                   onLoad={() => console.log(`${brand.name} logo loaded successfully`)}
                   onError={(e) => {
                     console.error(`Error loading ${brand.name} logo:`, e);
@@ -473,10 +495,9 @@ const About = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Get In Touch</h2>
+            <h2>{aboutData?.contactSection?.title || 'Get In Touch'}</h2>
             <p className="section-subtitle">
-              We would love to hear from you. For all inquiries, business proposals, 
-              or partnership opportunities, please reach out to us.
+              {aboutData?.contactSection?.subtitle || 'We would love to hear from you. For all inquiries, business proposals, or partnership opportunities, please reach out to us.'}
             </p>
           </motion.div>
 
@@ -492,8 +513,8 @@ const About = () => {
               <div>
                 <h4>Email</h4>
                 <p>
-                  <a href="mailto:info@alsafaglobal.com" style={{ color: 'inherit', textDecoration: 'underline', wordBreak: 'break-all' }}>
-                    info@alsafaglobal.com
+                  <a href={`mailto:${aboutData?.contactSection?.email || 'info@alsafaglobal.com'}`} style={{ color: 'inherit', textDecoration: 'underline', wordBreak: 'break-all' }}>
+                    {aboutData?.contactSection?.email || 'info@alsafaglobal.com'}
                   </a>
                 </p>
               </div>
@@ -503,15 +524,22 @@ const About = () => {
               <FiMapPin className="contact-icon" />
               <div>
                 <h4>Address</h4>
-                <p>
-                  AL SAFA GLOBAL GENERAL TRADING FZ LLC<br />
-                  FDBC3472<br />
-                  Compass Building, Al Shohada Road<br />
-                  Al Hamra Industrial Zone-FZ<br />
-                  P.O. Box 10055<br />
-                  Ras Al Khaimah, United Arab Emirates<br />
-                  <a href="tel:0097143741969" style={{ color: 'inherit', textDecoration: 'underline' }}>00971 4 3741 969</a>
-                </p>
+                {aboutData?.contactSection?.address?.length
+                  ? aboutData.contactSection.address.map((p, i) => (
+                      <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                    ))
+                  : (
+                    <p>
+                      AL SAFA GLOBAL GENERAL TRADING FZ LLC<br />
+                      FDBC3472<br />
+                      Compass Building, Al Shohada Road<br />
+                      Al Hamra Industrial Zone-FZ<br />
+                      P.O. Box 10055<br />
+                      Ras Al Khaimah, United Arab Emirates<br />
+                      <a href="tel:0097143741969" style={{ color: 'inherit', textDecoration: 'underline' }}>00971 4 3741 969</a>
+                    </p>
+                  )
+                }
               </div>
             </div>
           </motion.div>
@@ -522,9 +550,9 @@ const About = () => {
       <section className="achievements-section">
         <div className="container">
           <div className="achievements-grid">
-            {achievements.map((achievement, index) => (
+            {achievementsToRender.map((achievement, index) => (
               <motion.div
-                key={achievement.label}
+                key={achievement.label || index}
                 className="achievement-card"
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}

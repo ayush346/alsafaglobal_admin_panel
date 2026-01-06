@@ -22,12 +22,16 @@ import StatsSection from '../components/StatsSection';
 import TestimonialSection from '../components/TestimonialSection';
 import CtaSection from '../components/CtaSection';
 import './Home.css';
+import { client, urlFor } from '../sanityClient';
+import { homePageQuery } from '../queries/homePageQuery';
 
 const Home = () => {
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
+  const highlightBrand = (text) =>
+    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
   
   const [cardsScrolled, setCardsScrolled] = useState({
     card1: false,
@@ -39,6 +43,11 @@ const Home = () => {
 
   const [lastScrollY, setLastScrollY] = useState(0);
   const [hasTransitioned, setHasTransitioned] = useState(false);
+  const [homeData, setHomeData] = useState(null);
+
+  useEffect(() => {
+    client.fetch(homePageQuery).then(data => setHomeData(data));
+  }, []);
 
   // Check if user is revisiting the home page
   useEffect(() => {
@@ -198,10 +207,55 @@ const Home = () => {
     { number: "24/7", label: "Support Available", icon: <FiClock /> }
   ];
 
+  // Prepare CMS-driven data with safe fallbacks
+  const defaultIcons = [<FiUsers />, <FiAward />, <FiGlobe />, <FiClock />];
+  const defaultStats = [
+    { number: '500+', label: 'Satisfied Clients' },
+    { number: '15+', label: 'Years Experience' },
+    { number: '50+', label: 'Global Partners' },
+    { number: '24/7', label: 'Support Available' }
+  ];
+  const cmsStats = homeData?.ctaSection?.stats?.filter(s => s?.enabled !== false) || [];
+  const statsToRender = defaultStats.map((fallback, idx) => {
+    const cms = cmsStats[idx] || {};
+    return {
+      number: cms.number || fallback.number,
+      label: cms.label || fallback.label,
+      icon: defaultIcons[idx % defaultIcons.length]
+    };
+  });
+
+  const cmsSegments = homeData?.segmentsPreview?.segments?.filter(s => s?.enabled !== false);
+  const defaultColors = ["var(--primary-blue)", "var(--accent-orange)", "var(--primary-blue-dark)", "var(--accent-blue)", "var(--text-primary)"];
+  const divisionsFromCMS = cmsSegments?.map((s, index) => ({
+    title: s?.title || divisions[index % divisions.length]?.title,
+    description: s?.description || divisions[index % divisions.length]?.description,
+    icon: s?.icon || divisions[index % divisions.length]?.icon,
+    color: defaultColors[index % defaultColors.length],
+    link: s?.buttonLink || divisions[index % divisions.length]?.link || '/divisions'
+  }));
+  const divisionsToRender = divisionsFromCMS && divisionsFromCMS.length ? divisionsFromCMS : divisions;
+
+  const cmsFeatures = homeData?.whyChoose?.features?.filter(f => f?.enabled !== false)?.map(f => ({
+    icon: <FiCheckCircle />,
+    title: f?.title || '',
+    description: f?.description || ''
+  }));
+  const featuresToRender = cmsFeatures && cmsFeatures.length ? cmsFeatures : features;
+
   return (
     <div className="home-page">
       {/* 1. Hero Section - Welcoming */}
-      <HeroSection />
+      <HeroSection
+        bannerImageUrl={homeData?.bannerImage?.asset?.url}
+        bannerAlt={homeData?.bannerImage?.alt}
+        heroTitle={homeData?.heroTitle}
+        heroSubtitle={homeData?.heroSubtitle}
+        introTextBlocks={homeData?.introText}
+        heroSideImageUrl={homeData?.heroSideImage ? urlFor(homeData.heroSideImage).url() : undefined}
+        heroSideAlt={homeData?.heroSideImage?.alt}
+        heroStats={homeData?.stats}
+      />
 
       {/* 2. About Al Safa Global */}
       <section className="about-preview-section" ref={ref}>
@@ -213,38 +267,72 @@ const Home = () => {
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8 }}
             >
-              <h2>About <span className="gold-text">Al Safa Global</span></h2>
-              <p>
-                Al Safa Global General Trading FZ LLC is a UAE-based company specializing in comprehensive 
-                procurement and supply chain solutions. Headquartered in Ras Al Khaimah, we proudly serve 
-                businesses and projects within the UAE and internationally — across the Construction, 
-                Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors.
-              </p>
-              <p>
-                We partner with globally recognized brands and supply high-quality products that meet 
-                international standards. Whether supporting complex industrial projects, critical defense 
-                requirements, specialized marine and aerospace needs, or everyday office and IT demands, 
-                we ensure reliable and efficient sourcing for our clients worldwide.
-              </p>
-              <p>
-                Our strength lies in delivering cost-effective, timely, and dependable procurement 
-                solutions, backed by a deep understanding of market dynamics and logistical challenges. 
-                We position ourselves as a trusted partner — committed to helping clients achieve 
-                operational efficiency, project success, and sustainable growth.
-              </p>
+              <h2>
+                {homeData?.aboutPreview?.title ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: homeData.aboutPreview.title.replace(
+                        "Al Safa Global",
+                        "<span class='gold-text'>Al Safa Global</span>"
+                      )
+                    }}
+                  />
+                ) : (
+                  <>About <span className="gold-text">Al Safa Global</span></>
+                )}
+              </h2>
+              {homeData?.aboutPreview?.body?.length
+                ? homeData.aboutPreview.body.map((p, i) => (
+                    <p key={i}>{p?.children?.[0]?.text}</p>
+                  ))
+                : (
+                  <>
+                    <p>
+                      Al Safa Global General Trading FZ LLC is a UAE-based company specializing in comprehensive 
+                      procurement and supply chain solutions. Headquartered in Ras Al Khaimah, we proudly serve 
+                      businesses and projects within the UAE and internationally — across the Construction, 
+                      Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors.
+                    </p>
+                    <p>
+                      We partner with globally recognized brands and supply high-quality products that meet 
+                      international standards. Whether supporting complex industrial projects, critical defense 
+                      requirements, specialized marine and aerospace needs, or everyday office and IT demands, 
+                      we ensure reliable and efficient sourcing for our clients worldwide.
+                    </p>
+                    <p>
+                      Our strength lies in delivering cost-effective, timely, and dependable procurement 
+                      solutions, backed by a deep understanding of market dynamics and logistical challenges. 
+                      We position ourselves as a trusted partner — committed to helping clients achieve 
+                      operational efficiency, project success, and sustainable growth.
+                    </p>
+                  </>
+                )
+              }
               <div className="about-features">
-                <div className="feature-item">
-                  <FiCheckCircle className="feature-icon" />
-                  <span>End-to-End Procurement Solutions</span>
-                </div>
-                <div className="feature-item">
-                  <FiCheckCircle className="feature-icon" />
-                  <span>Global Sourcing & Supply</span>
-                </div>
-                <div className="feature-item">
-                  <FiCheckCircle className="feature-icon" />
-                  <span>Integrated Logistics Management</span>
-                </div>
+                {homeData?.aboutPreview?.highlights?.filter(h => h?.enabled !== false)?.length
+                  ? homeData.aboutPreview.highlights.filter(h => h?.enabled !== false).map((h, i) => (
+                      <div className="feature-item" key={i}>
+                        <FiCheckCircle className="feature-icon" />
+                        <span>{h?.title}</span>
+                      </div>
+                    ))
+                  : (
+                    <>
+                      <div className="feature-item">
+                        <FiCheckCircle className="feature-icon" />
+                        <span>End-to-End Procurement Solutions</span>
+                      </div>
+                      <div className="feature-item">
+                        <FiCheckCircle className="feature-icon" />
+                        <span>Global Sourcing & Supply</span>
+                      </div>
+                      <div className="feature-item">
+                        <FiCheckCircle className="feature-icon" />
+                        <span>Integrated Logistics Management</span>
+                      </div>
+                    </>
+                  )
+                }
               </div>
             </motion.div>
 
@@ -257,8 +345,8 @@ const Home = () => {
               {/* Company overview image above floating cards */}
               <div className="company-image-wrapper">
                 <img 
-                  src="/images/company-overview.jpg" 
-                  alt="Al Safa Global Company Overview" 
+                  src={homeData?.aboutPreview?.image ? urlFor(homeData.aboutPreview.image).url() : "/images/company-overview.jpg"} 
+                  alt={homeData?.aboutPreview?.image?.alt || "Al Safa Global Company Overview"} 
                   className="company-overview-image"
                 />
               </div>
@@ -295,7 +383,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Link to="/about" className="btn btn-primary">
-                Learn More About Us
+                {homeData?.aboutPreview?.buttonLabel || 'Learn More About Us'}
                 <FiArrowRight />
               </Link>
             </motion.div>
@@ -313,14 +401,14 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Our Business Segments</h2>
+            <h2>{homeData?.segmentsPreview?.title || 'Our Business Segments'}</h2>
             <p className="section-subtitle">
-              Al Safa Global specializes in a wide array of supply and service segments
+              {homeData?.segmentsPreview?.subtitle || 'Al Safa Global specializes in a wide array of supply and service segments'}
             </p>
           </motion.div>
 
           <div className="divisions-grid">
-            {divisions.map((division, index) => (
+            {divisionsToRender.map((division, index) => (
               <motion.div
                 key={division.title}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -346,14 +434,18 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2>Why Choose <span className="gold-text">Al Safa Global</span>?</h2>
+            <h2
+              dangerouslySetInnerHTML={{
+                __html: highlightBrand(homeData?.whyChoose?.title || 'Why Choose Al Safa Global?')
+              }}
+            />
             <p className="section-subtitle">
-              We combine industry expertise with innovative solutions to deliver exceptional value to our clients
+              {homeData?.whyChoose?.subtitle || 'We combine industry expertise with innovative solutions to deliver exceptional value to our clients'}
             </p>
           </motion.div>
 
           <div className="features-grid">
-            {features.map((feature, index) => (
+            {featuresToRender.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}
@@ -369,13 +461,22 @@ const Home = () => {
       </section>
 
       {/* 5. Ready to Get Started - CTA Section */}
-      <CtaSection />
+      <CtaSection
+        title={homeData?.ctaSection?.title}
+        subtitle={homeData?.ctaSection?.subtitle}
+        primaryButton={homeData?.ctaSection?.primaryButton}
+        secondaryButton={homeData?.ctaSection?.secondaryButton}
+      />
 
       {/* 6. Trusted Brand Partners - Stats Section */}
-      <StatsSection stats={stats} />
+      <StatsSection stats={statsToRender} />
 
       {/* 7. Get in Touch - Testimonials Section */}
-      <TestimonialSection />
+      <TestimonialSection
+        title={homeData?.testimonials?.title}
+        subtitle={homeData?.testimonials?.subtitle}
+        items={homeData?.testimonials?.items?.filter(t => t?.enabled !== false)}
+      />
     </div>
   );
 };

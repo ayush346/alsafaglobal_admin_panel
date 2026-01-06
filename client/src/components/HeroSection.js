@@ -4,20 +4,28 @@ import { Link } from 'react-router-dom';
 import { FiArrowRight, FiPlay } from 'react-icons/fi';
 import './HeroSection.css';
 
-const HeroSection = () => {
+const HeroSection = ({
+  bannerImageUrl,
+  bannerAlt,
+  heroTitle,
+  heroSubtitle,
+  introTextBlocks,
+  heroSideImageUrl,
+  heroSideAlt,
+  heroStats
+}) => {
   return (
     <>
       {/* Landing Page Banner Image */}
       <section className="landing-banner">
         <img 
-          src={process.env.PUBLIC_URL + "/images/hero-landing-image.jpg"} 
-                              alt="Al Safa Global - Global Procurement Solutions" 
+          src={bannerImageUrl || "/images/banner.jpg"} 
+          alt={bannerAlt || "Al Safa Global"} 
           className="landing-banner-image"
-          onLoad={() => console.log('Hero landing image loaded successfully from:', process.env.PUBLIC_URL + "/images/hero-landing-image.jpg")}
+          onLoad={() => console.log('Hero landing image loaded successfully')}
           onError={(e) => {
             console.error('Error loading hero landing image:', e);
-            console.error('Attempted URL:', process.env.PUBLIC_URL + "/images/hero-landing-image.jpg");
-            console.error('PUBLIC_URL:', process.env.PUBLIC_URL);
+            console.error('Attempted URL:', bannerImageUrl || "/images/banner.jpg");
           }}
         />
       </section>
@@ -42,8 +50,20 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Welcome to{' '}
-              <span className="gradient-text">Al Safa Global</span>
+              {heroTitle ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: heroTitle.replace(
+                      "Al Safa Global",
+                      "<span class='gradient-text'>Al Safa Global</span>"
+                    )
+                  }}
+                />
+              ) : (
+                <>
+                  Welcome to <span className="gradient-text">Al Safa Global</span>
+                </>
+              )}
             </motion.h1>
             
             <motion.p 
@@ -52,19 +72,31 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Your Trusted Partner in Procurement and Supply Chain Solutions
+              {heroSubtitle || 'Your Trusted Partner in Procurement and Supply Chain Solutions'}
             </motion.p>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
-              Al Safa Global General Trading FZ LLC is a UAE-based company specializing in comprehensive 
-              procurement and supply chain solutions. Headquartered in Ras Al Khaimah, we proudly serve 
-              businesses and projects within the UAE and internationally — across the Construction, 
-              Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors.
-            </motion.p>
+            {introTextBlocks?.length ? (
+              introTextBlocks.map((p, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.8 + i * 0.1 }}
+                >
+                  {p?.children?.[0]?.text}
+                </motion.p>
+              ))
+            ) : (
+              <motion.p 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              >
+                Al Safa Global General Trading FZ LLC is a UAE-based company specializing in comprehensive 
+                procurement and supply chain solutions. Headquartered in Ras Al Khaimah, we proudly serve 
+                businesses and projects within the UAE and internationally — across the Construction, 
+                Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors.
+              </motion.p>
+            )}
             
             {/* Mobile-only image display */}
             <motion.div 
@@ -76,13 +108,13 @@ const HeroSection = () => {
               <div className="hero-image-container">
                 <div className="hero-main-image">
                   <img 
-                    src={process.env.PUBLIC_URL + "/images/global-procurement.png"} 
-                    alt="Global Procurement Solutions" 
+                    src={heroSideImageUrl || "/images/hero.png"} 
+                    alt={heroSideAlt || "Global Procurement"} 
                     className="hero-image"
                     onLoad={() => console.log('Mobile global procurement image loaded successfully')}
                     onError={(e) => {
                       console.error('Error loading mobile global procurement image:', e);
-                      console.error('Attempted URL:', process.env.PUBLIC_URL + "/images/global-procurement.png");
+                      console.error('Attempted URL:', heroSideImageUrl || "/images/hero.png");
                     }}
                   />
                 </div>
@@ -112,18 +144,17 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
-              <div className="stat-item">
-                <span className="stat-number">500+</span>
-                <span className="stat-label">Satisfied Clients</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">15+</span>
-                <span className="stat-label">Years Experience</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">50+</span>
-                <span className="stat-label">Global Partners</span>
-              </div>
+              {(heroStats && heroStats.length ? heroStats : [
+                { number: '500+', label: 'Satisfied Clients' },
+                { number: '15+', label: 'Years Experience' },
+                { number: '50+', label: 'Global Partners' },
+                { number: '24/7', label: 'Support Available' }
+              ]).map((s, i) => (
+                <div className="stat-item" key={i}>
+                  <span className="stat-number">{s?.number}</span>
+                  <span className="stat-label">{s?.label}</span>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
           
@@ -136,13 +167,13 @@ const HeroSection = () => {
             <div className="hero-image-container">
               <div className="hero-main-image">
                 <img 
-                  src={process.env.PUBLIC_URL + "/images/global-procurement.png"} 
-                  alt="Global Procurement Solutions" 
+                  src={heroSideImageUrl || "/images/hero.png"} 
+                  alt={heroSideAlt || "Global Procurement"} 
                   className="hero-image"
                   onLoad={() => console.log('Desktop global procurement image loaded successfully')}
                   onError={(e) => {
                     console.error('Error loading desktop global procurement image:', e);
-                    console.error('Attempted URL:', process.env.PUBLIC_URL + "/images/global-procurement.png");
+                    console.error('Attempted URL:', heroSideImageUrl || "/images/hero.png");
                   }}
                 />
               </div>
@@ -170,6 +201,8 @@ const HeroSection = () => {
         </motion.div>
         <span>Scroll to explore</span>
       </motion.div>
+
+      
     </section>
     </>
   );

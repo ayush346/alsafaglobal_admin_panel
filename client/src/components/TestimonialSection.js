@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import './TestimonialSection.css';
 
-const TestimonialSection = () => {
-  const testimonials = [
+const TestimonialSection = ({ title, subtitle, items }) => {
+  const defaultTestimonials = [
     {
       name: "Ahmed Al Mansouri",
       position: "Project Manager",
@@ -23,6 +23,14 @@ const TestimonialSection = () => {
       text: "The team at Al Safa Global understands our industry needs perfectly. Highly recommended!"
     }
   ];
+  const testimonials = items && items.length
+    ? items.map(t => ({
+        name: t?.name,
+        position: t?.designation, // use designation as position/company combined if needed
+        company: '',
+        text: t?.quote
+      }))
+    : defaultTestimonials;
 
   return (
     <section className="testimonial-section">
@@ -34,9 +42,9 @@ const TestimonialSection = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2>What Our Clients Say</h2>
+          <h2>{title || 'What Our Clients Say'}</h2>
           <p className="section-subtitle">
-            Trusted by businesses across multiple industries
+            {subtitle || 'Trusted by businesses across multiple industries'}
           </p>
         </motion.div>
 
@@ -53,7 +61,7 @@ const TestimonialSection = () => {
               <p className="testimonial-text" lang="en">"{testimonial.text}"</p>
               <div className="testimonial-author">
                 <h4>{testimonial.name}</h4>
-                <p>{testimonial.position}, {testimonial.company}</p>
+                <p>{testimonial.position}{testimonial.company ? `, ${testimonial.company}` : ''}</p>
               </div>
             </motion.div>
           ))}

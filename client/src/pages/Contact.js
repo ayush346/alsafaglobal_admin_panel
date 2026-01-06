@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiMapPin, FiPhone, FiGlobe, FiClock, FiUsers } from 'react-icons/fi';
 import './Contact.css';
+import { client } from '../sanityClient';
+import { contactPageQuery } from '../queries/contactPageQuery';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,9 @@ const Contact = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [contactData, setContactData] = useState(null);
+  const highlightBrand = (text) =>
+    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,6 +91,10 @@ Submitted on: ${new Date().toLocaleString()}
     }
   };
 
+  useEffect(() => {
+    client.fetch(contactPageQuery).then(setContactData);
+  }, []);
+
   return (
     <div className="contact-page">
       {/* Hero Section */}
@@ -97,13 +106,23 @@ Submitted on: ${new Date().toLocaleString()}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="gradient-text">
-              Contact <span className="gold-text">Al Safa Global</span>
-            </h1>
-            <p className="hero-subtitle">
-              We would love to hear from you. For all inquiries, business proposals, 
-              or partnership opportunities, please reach out to us.
-            </p>
+            <h1
+              className="gradient-text"
+              dangerouslySetInnerHTML={{
+                __html: highlightBrand(contactData?.title || 'Contact Al Safa Global')
+              }}
+            />
+            {contactData?.intro?.length
+              ? contactData.intro.map((p, i) => (
+                  <p key={i} className="hero-subtitle">{p?.children?.[0]?.text || ''}</p>
+                ))
+              : (
+                <p className="hero-subtitle">
+                  We would love to hear from you. For all inquiries, business proposals, 
+                  or partnership opportunities, please reach out to us.
+                </p>
+              )
+            }
           </motion.div>
         </div>
       </section>
@@ -119,12 +138,19 @@ Submitted on: ${new Date().toLocaleString()}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="contact-heading">Get In Touch</h2>
-              <p>
-                Al Safa Global General Trading FZ LLC is your trusted partner in procurement 
-                and supply chain solutions. We're here to help you with all your business needs 
-                across multiple industries and sectors.
-              </p>
+              <h2 className="contact-heading">{contactData?.getInTouch?.title || 'Get In Touch'}</h2>
+              {contactData?.getInTouch?.description?.length
+                ? contactData.getInTouch.description.map((p, i) => (
+                    <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                  ))
+                : (
+                  <p>
+                    Al Safa Global General Trading FZ LLC is your trusted partner in procurement 
+                    and supply chain solutions. We're here to help you with all your business needs 
+                    across multiple industries and sectors.
+                  </p>
+                )
+              }
               
               <div className="contact-details">
                 <div className="contact-item">
@@ -132,11 +158,11 @@ Submitted on: ${new Date().toLocaleString()}
                   <div>
                     <h4>Email</h4>
                     <p>
-                      <a href="mailto:info@alsafaglobal.com" className="contact-link">
-                        info@alsafaglobal.com
+                      <a href={`mailto:${contactData?.contactDetails?.email || 'info@alsafaglobal.com'}`} className="contact-link">
+                        {contactData?.contactDetails?.email || 'info@alsafaglobal.com'}
                       </a>
                     </p>
-                    <p>For business inquiries and partnerships</p>
+                    <p>{contactData?.contactDetails?.emailNote || ''}</p>
                   </div>
                 </div>
                 
@@ -145,27 +171,34 @@ Submitted on: ${new Date().toLocaleString()}
                   <div>
                     <h4>Phone</h4>
                     <p>
-                      <a href="tel:0097143741969" className="contact-link">
-                        00971 4 3741 969
+                      <a href={`tel:${contactData?.contactDetails?.phone || '0097143741969'}`} className="contact-link">
+                        {contactData?.contactDetails?.phone || '00971 4 3741 969'}
                       </a>
                     </p>
-                    <p>Available during business hours</p>
+                    <p>{contactData?.contactDetails?.phoneNote || ''}</p>
                   </div>
                 </div>
                 
                 <div className="contact-item">
                   <FiMapPin className="contact-icon" />
                   <div>
-                    <h4>Head Office Address</h4>
-                    <p>
-                      <strong>AL SAFA GLOBAL GENERAL TRADING FZ LLC</strong><br />
-                      <strong>FDBC3472</strong><br />
-                      Compass Building, Al Shohada Road<br />
-                      Al Hamra Industrial Zone-FZ<br />
-                      P.O. Box 10055<br />
-                      Ras Al Khaimah, United Arab Emirates<br />
-                      <a href="tel:0097143741969" style={{ color: 'inherit', textDecoration: 'underline' }}>00971 4 3741 969</a>
-                    </p>
+                    <h4>{contactData?.contactDetails?.addressTitle || 'Head Office Address'}</h4>
+                    {contactData?.contactDetails?.address?.length
+                      ? contactData.contactDetails.address.map((p, i) => (
+                          <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                        ))
+                      : (
+                        <p>
+                          <strong>AL SAFA GLOBAL GENERAL TRADING FZ LLC</strong><br />
+                          <strong>FDBC3472</strong><br />
+                          Compass Building, Al Shohada Road<br />
+                          Al Hamra Industrial Zone-FZ<br />
+                          P.O. Box 10055<br />
+                          Ras Al Khaimah, United Arab Emirates<br />
+                          <a href="tel:0097143741969" style={{ color: 'inherit', textDecoration: 'underline' }}>00971 4 3741 969</a>
+                        </p>
+                      )
+                    }
                   </div>
                 </div>
 
@@ -173,9 +206,18 @@ Submitted on: ${new Date().toLocaleString()}
                   <FiClock className="contact-icon" />
                   <div>
                     <h4>Business Hours</h4>
-                    <p>Sunday - Thursday: 8:00 AM - 6:00 PM</p>
-                    <p>Friday: 8:00 AM - 1:00 PM</p>
-                    <p>Saturday: Closed</p>
+                    {contactData?.contactDetails?.businessHours?.length
+                      ? contactData.contactDetails.businessHours.map((p, i) => (
+                          <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                        ))
+                      : (
+                        <>
+                          <p>Sunday - Thursday: 8:00 AM - 6:00 PM</p>
+                          <p>Friday: 8:00 AM - 1:00 PM</p>
+                          <p>Saturday: Closed</p>
+                        </>
+                      )
+                    }
                   </div>
                 </div>
 
@@ -183,17 +225,35 @@ Submitted on: ${new Date().toLocaleString()}
                   <FiGlobe className="contact-icon" />
                   <div>
                     <h4>Service Areas</h4>
-                    <p>UAE and International Markets</p>
-                    <p>Construction, Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors</p>
+                    {contactData?.contactDetails?.serviceAreas?.length
+                      ? contactData.contactDetails.serviceAreas.map((p, i) => (
+                          <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                        ))
+                      : (
+                        <>
+                          <p>UAE and International Markets</p>
+                          <p>Construction, Industrial, Marine, Aerospace, Defence, IT, and Office Supplies sectors</p>
+                        </>
+                      )
+                    }
                   </div>
                 </div>
 
                 <div className="contact-item">
                   <FiUsers className="contact-icon" />
                   <div>
-                    <h4>Partnership Opportunities</h4>
-                    <p>We welcome collaboration with suppliers, manufacturers, and business partners worldwide</p>
-                    <p>Contact us to discuss potential partnerships</p>
+                    <h4>{contactData?.partnership?.title || 'Partnership Opportunities'}</h4>
+                    {contactData?.partnership?.description?.length
+                      ? contactData.partnership.description.map((p, i) => (
+                          <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                        ))
+                      : (
+                        <>
+                          <p>We welcome collaboration with suppliers, manufacturers, and business partners worldwide</p>
+                          <p>Contact us to discuss potential partnerships</p>
+                        </>
+                      )
+                    }
                   </div>
                 </div>
               </div>
@@ -206,8 +266,15 @@ Submitted on: ${new Date().toLocaleString()}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h2>Send us a Message</h2>
-              <p>Fill out the form below and click "Send Message" to open your email client with a pre-filled message.</p>
+              <h2>{contactData?.formContent?.title || 'Send us a Message'}</h2>
+              {contactData?.formContent?.description?.length
+                ? contactData.formContent.description.map((p, i) => (
+                    <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                  ))
+                : (
+                  <p>Fill out the form below and click "Send Message" to open your email client with a pre-filled message.</p>
+                )
+              }
               
               {submitStatus === 'success' && (
                 <div className="alert alert-success">
@@ -327,32 +394,14 @@ Submitted on: ${new Date().toLocaleString()}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2>Why Choose Al Safa Global?</h2>
+            <h2 dangerouslySetInnerHTML={{ __html: highlightBrand(contactData?.whyChoose?.title || 'Why Choose Al Safa Global?') }} />
             <div className="benefits-grid">
-              <div className="benefit-item">
-                <h3>Global Sourcing Network</h3>
-                <p>Direct access to reputed brands and suppliers worldwide for comprehensive procurement solutions.</p>
-              </div>
-              <div className="benefit-item">
-                <h3>End-to-End Solutions</h3>
-                <p>Complete procurement and logistics management from sourcing to delivery coordination.</p>
-              </div>
-              <div className="benefit-item">
-                <h3>Competitive Pricing</h3>
-                <p>Cost-effective sourcing without compromising on quality or authenticity of products.</p>
-              </div>
-              <div className="benefit-item">
-                <h3>Industry Expertise</h3>
-                <p>Experienced team with deep industry-specific knowledge across multiple sectors.</p>
-              </div>
-              <div className="benefit-item">
-                <h3>Quality Assurance</h3>
-                <p>Rigorous quality control and genuine OEM parts guarantee for all products and services.</p>
-              </div>
-              <div className="benefit-item">
-                <h3>Responsive Service</h3>
-                <p>Quick turnaround times and commitment to deadlines with personalized customer support.</p>
-              </div>
+              {(contactData?.whyChoose?.items?.filter(item => item?.enabled !== false) || []).map((item, i) => (
+                <div className="benefit-item" key={i}>
+                  <h3>{item?.title || ''}</h3>
+                  <p>{item?.description || ''}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
         </div>

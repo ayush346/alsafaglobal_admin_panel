@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import './Divisions.css';
+import { client } from '../sanityClient';
+import { segmentsPageQuery } from '../queries/segmentsPageQuery';
 
 const Divisions = () => {
   const location = useLocation();
+  const [segmentsData, setSegmentsData] = useState(null);
+  const highlightBrand = (text) =>
+    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
 
   // Scroll to specific section based on URL hash or query parameter
   useEffect(() => {
@@ -45,6 +50,10 @@ const Divisions = () => {
 
     scrollToSection();
   }, [location]);
+
+  useEffect(() => {
+    client.fetch(segmentsPageQuery).then(setSegmentsData);
+  }, []);
 
   const divisions = [
     {
@@ -118,6 +127,40 @@ const Divisions = () => {
     }
   ];
 
+  const divisionsFromCMS = segmentsData?.segments
+    ?.filter(seg => seg?.enabled !== false)
+    ?.map(seg => ({
+      id: undefined,
+      title: seg?.title || '',
+      description: seg?.description || '',
+      servicesTitle: seg?.servicesTitle || 'Our Products & Services Include:',
+      items: (seg?.services || [])
+        .filter(s => s?.enabled !== false)
+        .map(s => s?.text || '')
+    }));
+  const divisionsToRender = (divisionsFromCMS && divisionsFromCMS.length) ? divisionsFromCMS : divisions;
+
+  const whyChooseItemsDefault = [
+    {
+      title: "Specialized Expertise",
+      description: "Each division is staffed with industry experts who understand the unique requirements and challenges of their respective sectors."
+    },
+    {
+      title: "Quality Assurance",
+      description: "We maintain rigorous quality control standards and source only from reputable manufacturers and suppliers."
+    },
+    {
+      title: "Comprehensive Solutions",
+      description: "From initial procurement to final delivery, we provide end-to-end solutions tailored to your specific needs."
+    },
+    {
+      title: "Global Network",
+      description: "Our extensive network of suppliers and partners enables us to source the best products at competitive prices."
+    }
+  ];
+  const whyChooseItemsCMS = segmentsData?.whyChoose?.items?.filter(i => i?.enabled !== false);
+  const whyChooseItemsToRender = (whyChooseItemsCMS && whyChooseItemsCMS.length) ? whyChooseItemsCMS : whyChooseItemsDefault;
+
   return (
     <div className="divisions-page">
       {/* Hero Section */}
@@ -129,15 +172,25 @@ const Divisions = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="gradient-text">
-              <span className="gold-text">Al Safa Global</span> Segments
-            </h1>
+            <h1
+              className="gradient-text"
+              dangerouslySetInnerHTML={{
+                __html: highlightBrand(segmentsData?.title || 'Al Safa Global Segments')
+              }}
+            />
 
-            <p>
-              We provide comprehensive procurement and supply chain solutions across multiple industries, 
-              ensuring our clients receive the highest quality products and services tailored to their 
-              specific sector requirements.
-            </p>
+            {segmentsData?.intro?.length
+              ? segmentsData.intro.map((p, i) => (
+                  <p key={i}>{p?.children?.[0]?.text || ''}</p>
+                ))
+              : (
+                <p>
+                  We provide comprehensive procurement and supply chain solutions across multiple industries, 
+                  ensuring our clients receive the highest quality products and services tailored to their 
+                  specific sector requirements.
+                </p>
+              )
+            }
           </motion.div>
         </div>
       </section>
@@ -145,7 +198,7 @@ const Divisions = () => {
       {/* Divisions Content */}
       <section className="divisions-content">
         <div className="container">
-          {divisions.map((division, index) => (
+          {divisionsToRender.map((division, index) => (
             <motion.div
               key={division.title}
               id={division.id}
@@ -161,9 +214,9 @@ const Divisions = () => {
               </div>
               
               <div className="division-items-container">
-                <h3>Our Products & Services Include:</h3>
+                <h3>{division.servicesTitle || 'Our Products & Services Include:'}</h3>
                 <ul className="division-items">
-                  {division.items.map((item, itemIndex) => (
+                  {(division.items || []).map((item, itemIndex) => (
                     <motion.li 
                       key={itemIndex}
                       initial={{ opacity: 0, x: -20 }}
@@ -191,24 +244,14 @@ const Divisions = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2>Why Choose Us?</h2>
+            <h2>{segmentsData?.whyChoose?.title || 'Why Choose Us?'}</h2>
             <div className="info-grid">
-              <div className="info-item">
-                <h3>Specialized Expertise</h3>
-                <p>Each division is staffed with industry experts who understand the unique requirements and challenges of their respective sectors.</p>
-              </div>
-              <div className="info-item">
-                <h3>Quality Assurance</h3>
-                <p>We maintain rigorous quality control standards and source only from reputable manufacturers and suppliers.</p>
-              </div>
-              <div className="info-item">
-                <h3>Comprehensive Solutions</h3>
-                <p>From initial procurement to final delivery, we provide end-to-end solutions tailored to your specific needs.</p>
-              </div>
-              <div className="info-item">
-                <h3>Global Network</h3>
-                <p>Our extensive network of suppliers and partners enables us to source the best products at competitive prices.</p>
-              </div>
+              {whyChooseItemsToRender.map((item, i) => (
+                <div className="info-item" key={i}>
+                  <h3>{item?.title || ''}</h3>
+                  <p>{item?.description || ''}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
         </div>
