@@ -209,7 +209,7 @@ const Home = () => {
     description: s?.description || divisions[index % divisions.length]?.description,
     icon: s?.icon || divisions[index % divisions.length]?.icon,
     color: defaultColors[index % defaultColors.length],
-    link: s?.buttonLink || divisions[index % divisions.length]?.link || '/divisions'
+    link: s?.buttonLink || '/divisions'
   }));
   const divisionsToRender = divisionsFromCMS && divisionsFromCMS.length ? divisionsFromCMS : divisions;
 
