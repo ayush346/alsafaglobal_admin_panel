@@ -200,30 +200,7 @@ const Home = () => {
     }
   ];
 
-  const stats = [
-    { number: "500+", label: "Satisfied Clients", icon: <FiUsers /> },
-    { number: "15+", label: "Years Experience", icon: <FiAward /> },
-    { number: "50+", label: "Global Partners", icon: <FiGlobe /> },
-    { number: "24/7", label: "Support Available", icon: <FiClock /> }
-  ];
-
-  // Prepare CMS-driven data with safe fallbacks
-  const defaultIcons = [<FiUsers />, <FiAward />, <FiGlobe />, <FiClock />];
-  const defaultStats = [
-    { number: '500+', label: 'Satisfied Clients' },
-    { number: '15+', label: 'Years Experience' },
-    { number: '50+', label: 'Global Partners' },
-    { number: '24/7', label: 'Support Available' }
-  ];
-  const cmsStats = homeData?.ctaSection?.stats?.filter(s => s?.enabled !== false) || [];
-  const statsToRender = defaultStats.map((fallback, idx) => {
-    const cms = cmsStats[idx] || {};
-    return {
-      number: cms.number || fallback.number,
-      label: cms.label || fallback.label,
-      icon: defaultIcons[idx % defaultIcons.length]
-    };
-  });
+  const statsToRender = homeData?.ctaSection?.stats?.filter(s => s?.enabled !== false) || [];
 
   const cmsSegments = homeData?.segmentsPreview?.segments?.filter(s => s?.enabled !== false);
   const defaultColors = ["var(--primary-blue)", "var(--accent-orange)", "var(--primary-blue-dark)", "var(--accent-blue)", "var(--text-primary)"];
