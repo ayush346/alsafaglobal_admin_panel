@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import './Header.css';
-import { handleAdmin } from '../admin';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +32,29 @@ const Header = () => {
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const handleAdmin = () => {
+    const pwd = window.prompt("Enter Admin Password:");
+    if (!pwd) return;
+
+    if (pwd === process.env.REACT_APP_ADMIN_PASSWORD) {
+      const choice = window.prompt(
+        "Select Admin Area:\n\n1 = CMS\n2 = Analytics"
+      );
+
+      if (choice === "1") {
+        const url = process.env.REACT_APP_SANITY_STUDIO_URL;
+        if (url) window.location.href = url;
+        else alert("CMS URL not configured");
+      }
+
+      if (choice === "2") {
+        alert("Analytics coming soon 🙂");
+      }
+    } else {
+      alert("Incorrect Password 😐");
+    }
+  };
 
   return (
     <motion.header 
@@ -96,18 +118,8 @@ const Header = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: navItems.length * 0.1 }}
               >
-                <button className="nav-link" onClick={() => handleAdmin('cms')}>
-                  CMS
-                </button>
-              </motion.li>
-              <motion.li 
-                className="nav-item"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: (navItems.length + 1) * 0.1 }}
-              >
-                <button className="nav-link" onClick={() => handleAdmin('analytics')}>
-                  Analytics
+                <button className="nav-link" onClick={handleAdmin}>
+                  Admin
                 </button>
               </motion.li>
             </ul>
@@ -192,18 +204,8 @@ const Header = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: navItems.length * 0.1 }}
                   >
-                    <button className="mobile-nav-link" onClick={() => handleAdmin('cms')}>
-                      CMS
-                    </button>
-                  </motion.li>
-                  <motion.li 
-                    className="mobile-nav-item"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (navItems.length + 1) * 0.1 }}
-                  >
-                    <button className="mobile-nav-link" onClick={() => handleAdmin('analytics')}>
-                      Analytics
+                    <button className="mobile-nav-link" onClick={handleAdmin}>
+                      Admin
                     </button>
                   </motion.li>
                 </ul>
