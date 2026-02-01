@@ -12,7 +12,8 @@ const HeroSection = ({
   introTextBlocks,
   heroSideImageUrl,
   heroSideAlt,
-  heroStats
+  heroStats,
+  brandColorStyle
 }) => {
   return (
     <>
@@ -51,17 +52,38 @@ const HeroSection = ({
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               {heroTitle ? (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: heroTitle.replace(
-                      "Al Safa Global",
-                      "<span class='gradient-text'>Al Safa Global</span>"
-                    )
-                  }}
-                />
+                (() => {
+                  const brandText = "Al Safa Global";
+                  const parts = heroTitle.split(brandText);
+                  if (parts.length > 1) {
+                    return (
+                      <>
+                        {parts[0]}
+                        <span
+                          style={{
+                            color: brandColorStyle === 'black' ? '#000000' : '#f59e0b'
+                          }}
+                          data-cms-key="hero.brandText"
+                        >
+                          {brandText}
+                        </span>
+                        {parts[1]}
+                      </>
+                    );
+                  }
+                  return <span>{heroTitle}</span>;
+                })()
               ) : (
                 <>
-                  Welcome to <span className="gradient-text">Al Safa Global</span>
+                  Welcome to{' '}
+                  <span
+                    style={{
+                      color: brandColorStyle === 'black' ? '#000000' : '#f59e0b'
+                    }}
+                    data-cms-key="hero.brandText"
+                  >
+                    Al Safa Global
+                  </span>
                 </>
               )}
             </motion.h1>

@@ -9,6 +9,7 @@ export const homePageQuery = `
 
     heroTitle,
     heroSubtitle,
+    brandColorStyle,
     introText,
 
     heroSideImage{

@@ -16,6 +16,19 @@ export default {
           
       { name: 'heroTitle', title: 'Hero Title', type: 'string' },
       { name: 'heroSubtitle', title: 'Hero Subtitle', type: 'text' },
+      {
+        name: 'brandColorStyle',
+        title: 'Brand Text Color',
+        type: 'string',
+        options: {
+          list: [
+            { title: 'Gold', value: 'gold' },
+            { title: 'Black', value: 'black' }
+          ],
+          layout: 'radio'
+        },
+        initialValue: 'gold'
+      },
       { name: 'introText', title: 'Intro Paragraph', type: 'array', of: [{ type: 'block' }] },
 
       {
