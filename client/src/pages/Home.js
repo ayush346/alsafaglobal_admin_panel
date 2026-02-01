@@ -24,14 +24,14 @@ import CtaSection from '../components/CtaSection';
 import './Home.css';
 import { client, urlFor } from '../sanityClient';
 import { homePageQuery } from '../queries/homePageQuery';
+import { highlightBrand } from '../components/BrandText';
+import BrandText from '../components/BrandText';
 
 const Home = () => {
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
-  const highlightBrand = (text) =>
-    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
   
   const [cardsScrolled, setCardsScrolled] = useState({
     card1: false,
@@ -250,14 +250,15 @@ const Home = () => {
                 {homeData?.aboutPreview?.title ? (
                   <span
                     dangerouslySetInnerHTML={{
-                      __html: homeData.aboutPreview.title.replace(
-                        "Al Safa Global",
-                        "<span class='gold-text'>Al Safa Global</span>"
+                      __html: highlightBrand(
+                        homeData.aboutPreview.title,
+                        homeData?.brandText || 'Al Safa Global',
+                        homeData?.brandColor
                       )
                     }}
                   />
                 ) : (
-                  <>About <span className="gold-text">Al Safa Global</span></>
+                  <>About <BrandText brandText={homeData?.brandText} brandColor={homeData?.brandColor} /></>
                 )}
               </h2>
               {homeData?.aboutPreview?.body?.length
@@ -415,7 +416,11 @@ const Home = () => {
           >
             <h2
               dangerouslySetInnerHTML={{
-                __html: highlightBrand(homeData?.whyChoose?.title || 'Why Choose Al Safa Global?')
+                __html: highlightBrand(
+                  homeData?.whyChoose?.title || 'Why Choose Al Safa Global?',
+                  homeData?.brandText || 'Al Safa Global',
+                  homeData?.brandColor
+                )
               }}
             />
             <p className="section-subtitle">

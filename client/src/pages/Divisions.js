@@ -4,12 +4,14 @@ import { useLocation } from 'react-router-dom';
 import './Divisions.css';
 import { client } from '../sanityClient';
 import { segmentsPageQuery } from '../queries/segmentsPageQuery';
+import { homePageQuery } from '../queries/homePageQuery';
+import { highlightBrand } from '../components/BrandText';
+import BrandText from '../components/BrandText';
 
 const Divisions = () => {
   const location = useLocation();
   const [segmentsData, setSegmentsData] = useState(null);
-  const highlightBrand = (text) =>
-    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
+  const [homeData, setHomeData] = useState(null);
 
   // Scroll to specific section based on URL hash or query parameter
   useEffect(() => {
@@ -53,6 +55,7 @@ const Divisions = () => {
 
   useEffect(() => {
     client.fetch(segmentsPageQuery).then(setSegmentsData);
+    client.fetch(homePageQuery).then(setHomeData);
   }, []);
 
   const divisions = [
@@ -173,9 +176,12 @@ const Divisions = () => {
             transition={{ duration: 0.8 }}
           >
             <h1
-              className="gradient-text"
               dangerouslySetInnerHTML={{
-                __html: highlightBrand(segmentsData?.title || 'Al Safa Global Segments')
+                __html: highlightBrand(
+                  segmentsData?.title || 'Al Safa Global Segments',
+                  homeData?.brandText || 'Al Safa Global',
+                  homeData?.brandColor
+                )
               }}
             />
 

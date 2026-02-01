@@ -4,6 +4,9 @@ import { FiMail, FiMapPin, FiPhone, FiGlobe, FiClock, FiUsers } from 'react-icon
 import './Contact.css';
 import { client } from '../sanityClient';
 import { contactPageQuery } from '../queries/contactPageQuery';
+import { homePageQuery } from '../queries/homePageQuery';
+import { highlightBrand } from '../components/BrandText';
+import BrandText from '../components/BrandText';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -19,8 +22,7 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [contactData, setContactData] = useState(null);
-  const highlightBrand = (text) =>
-    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
+  const [homeData, setHomeData] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -93,6 +95,7 @@ Submitted on: ${new Date().toLocaleString()}
 
   useEffect(() => {
     client.fetch(contactPageQuery).then(setContactData);
+    client.fetch(homePageQuery).then(setHomeData);
   }, []);
 
   return (
@@ -107,9 +110,12 @@ Submitted on: ${new Date().toLocaleString()}
             transition={{ duration: 0.8 }}
           >
             <h1
-              className="gradient-text"
               dangerouslySetInnerHTML={{
-                __html: highlightBrand(contactData?.title || 'Contact Al Safa Global')
+                __html: highlightBrand(
+                  contactData?.title || 'Contact Al Safa Global',
+                  homeData?.brandText || 'Al Safa Global',
+                  homeData?.brandColor
+                )
               }}
             />
             {contactData?.intro?.length
@@ -394,7 +400,7 @@ Submitted on: ${new Date().toLocaleString()}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 dangerouslySetInnerHTML={{ __html: highlightBrand(contactData?.whyChoose?.title || 'Why Choose Al Safa Global?') }} />
+            <h2 dangerouslySetInnerHTML={{ __html: highlightBrand(contactData?.whyChoose?.title || 'Why Choose Al Safa Global?', homeData?.brandText || 'Al Safa Global', homeData?.brandColor) }} />
             <div className="benefits-grid">
               {(contactData?.whyChoose?.items?.filter(item => item?.enabled !== false) || []).map((item, i) => (
                 <div className="benefit-item" key={i}>

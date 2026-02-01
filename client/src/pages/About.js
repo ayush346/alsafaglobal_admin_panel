@@ -17,18 +17,20 @@ import {
 import './About.css';
 import { client } from '../sanityClient';
 import { aboutPageQuery } from '../queries/aboutPageQuery';
+import { homePageQuery } from '../queries/homePageQuery';
+import { highlightBrand } from '../components/BrandText';
+import BrandText from '../components/BrandText';
 
 const About = () => {
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
-  const highlightBrand = (text) =>
-    text?.replace(/Al Safa Global/g, "<span class='gradient-text'>Al Safa Global</span>");
 
   // State to track if brands have been animated in this page visit
   const [brandsAnimated, setBrandsAnimated] = useState(false);
   const [aboutData, setAboutData] = useState(null);
+  const [homeData, setHomeData] = useState(null);
 
   // Add intersection observer for brand items
   const [brandsRef, brandsInView] = useInView({
@@ -185,7 +187,7 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="gradient-text" dangerouslySetInnerHTML={{ __html: highlightBrand(aboutData?.pageTitle || 'About Al Safa Global') }} />
+            <h1 dangerouslySetInnerHTML={{ __html: highlightBrand(aboutData?.pageTitle || 'About Al Safa Global', homeData?.brandText || 'Al Safa Global', homeData?.brandColor) }} />
 
             {aboutData?.introText?.length
               ? aboutData.introText.map((p, i) => (
@@ -310,7 +312,7 @@ const About = () => {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <h2 dangerouslySetInnerHTML={{ __html: highlightBrand(aboutData?.whyChoose?.title || 'Why Choose Al Safa Global?') }} />
+            <h2 dangerouslySetInnerHTML={{ __html: highlightBrand(aboutData?.whyChoose?.title || 'Why Choose Al Safa Global?', homeData?.brandText || 'Al Safa Global', homeData?.brandColor) }} />
             <p className="section-subtitle">
               {aboutData?.whyChoose?.subtitle || 'We combine industry expertise with innovative solutions to deliver exceptional value'}
             </p>
