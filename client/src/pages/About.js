@@ -49,6 +49,10 @@ const About = () => {
     client.fetch(aboutPageQuery).then(setAboutData);
   }, []);
 
+  useEffect(() => {
+    client.fetch(homePageQuery).then(setHomeData);
+  }, []);
+
   const values = [
     {
       icon: <FiShield />,
