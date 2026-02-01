@@ -232,7 +232,8 @@ const Home = () => {
         heroSideImageUrl={homeData?.heroSideImage ? urlFor(homeData.heroSideImage).url() : undefined}
         heroSideAlt={homeData?.heroSideImage?.alt}
         heroStats={homeData?.stats}
-        brandColorStyle={homeData?.brandColorStyle}
+        brandText={homeData?.brandText}
+        brandColor={homeData?.brandColor}
       />
 
       {/* 2. About Al Safa Global */}

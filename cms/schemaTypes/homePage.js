@@ -17,17 +17,25 @@ export default {
       { name: 'heroTitle', title: 'Hero Title', type: 'string' },
       { name: 'heroSubtitle', title: 'Hero Subtitle', type: 'text' },
       {
-        name: 'brandColorStyle',
+        name: 'brandText',
+        title: 'Brand Text',
+        type: 'string',
+        description: 'The text to display in the hero heading (e.g., "Al Safa Global")',
+        initialValue: 'Al Safa Global'
+      },
+      {
+        name: 'brandColor',
         title: 'Brand Text Color',
         type: 'string',
         options: {
           list: [
-            { title: 'Gold', value: 'gold' },
-            { title: 'Black', value: 'black' }
+            { title: 'Default', value: 'default' },
+            { title: 'Gold', value: '#f59e0b' },
+            { title: 'Black', value: '#000000' }
           ],
           layout: 'radio'
         },
-        initialValue: 'gold'
+        initialValue: '#f59e0b'
       },
       { name: 'introText', title: 'Intro Paragraph', type: 'array', of: [{ type: 'block' }] },
 

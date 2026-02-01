@@ -13,7 +13,8 @@ const HeroSection = ({
   heroSideImageUrl,
   heroSideAlt,
   heroStats,
-  brandColorStyle
+  brandText,
+  brandColor
 }) => {
   return (
     <>
@@ -53,19 +54,23 @@ const HeroSection = ({
             >
               {heroTitle ? (
                 (() => {
-                  const brandText = "Al Safa Global";
-                  const parts = heroTitle.split(brandText);
+                  const brandTextValue = brandText || "Al Safa Global";
+                  const parts = heroTitle.split(brandTextValue);
                   if (parts.length > 1) {
                     return (
                       <>
                         {parts[0]}
                         <span
                           style={{
-                            color: brandColorStyle === 'black' ? '#000000' : '#f59e0b'
+                            color:
+                              brandColor === 'default'
+                                ? 'currentColor'
+                                : brandColor || '#f59e0b',
                           }}
                           data-cms-key="hero.brandText"
+                          data-cms-field="brandColor"
                         >
-                          {brandText}
+                          {brandTextValue}
                         </span>
                         {parts[1]}
                       </>
@@ -78,11 +83,15 @@ const HeroSection = ({
                   Welcome to{' '}
                   <span
                     style={{
-                      color: brandColorStyle === 'black' ? '#000000' : '#f59e0b'
+                      color:
+                        brandColor === 'default'
+                          ? 'currentColor'
+                          : brandColor || '#f59e0b',
                     }}
                     data-cms-key="hero.brandText"
+                    data-cms-field="brandColor"
                   >
-                    Al Safa Global
+                    {brandText || 'Al Safa Global'}
                   </span>
                 </>
               )}
