@@ -62,10 +62,9 @@ const HeroSection = ({
                         {parts[0]}
                         <span
                           style={{
-                            color:
-                              brandColor === 'default'
-                                ? 'currentColor'
-                                : brandColor || '#f59e0b',
+                            color: brandColor === 'gold'
+                              ? '#f59e0b'
+                              : 'currentColor',
                           }}
                           data-cms-key="hero.brandText"
                           data-cms-field="brandColor"
@@ -83,10 +82,9 @@ const HeroSection = ({
                   Welcome to{' '}
                   <span
                     style={{
-                      color:
-                        brandColor === 'default'
-                          ? 'currentColor'
-                          : brandColor || '#f59e0b',
+                      color: brandColor === 'gold'
+                        ? '#f59e0b'
+                        : 'currentColor',
                     }}
                     data-cms-key="hero.brandText"
                     data-cms-field="brandColor"

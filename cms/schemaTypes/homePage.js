@@ -29,13 +29,12 @@ export default {
         type: 'string',
         options: {
           list: [
-            { title: 'Default', value: 'default' },
-            { title: 'Gold', value: '#f59e0b' },
-            { title: 'Black', value: '#000000' }
+            { title: 'Default (Match Heading)', value: 'default' },
+            { title: 'Gold', value: 'gold' }
           ],
           layout: 'radio'
         },
-        initialValue: '#f59e0b'
+        initialValue: 'default'
       },
       { name: 'introText', title: 'Intro Paragraph', type: 'array', of: [{ type: 'block' }] },
 
