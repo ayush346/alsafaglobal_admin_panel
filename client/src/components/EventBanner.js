@@ -84,10 +84,9 @@ const EventBanner = ({ events = [] }) => {
             style={
               bgUrl
                 ? { backgroundImage: `url(${bgUrl})` }
-                : { background: 'linear-gradient(135deg, #64748b 0%, #94a3b8 100%)' }
+                : { backgroundColor: '#f8fafc' }
             }
           />
-          <div className="event-banner-overlay" />
           <div className="container event-banner-content">
             <div className="event-banner-text">
               {currentEvent?.title && (
