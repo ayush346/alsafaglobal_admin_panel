@@ -23,6 +23,18 @@ export const homePageQuery = `
       label
     },
 
+    homeEvents[]{
+      enabled,
+      title,
+      subtitle,
+      ctaLabel,
+      ctaLink,
+      background{
+        asset->{url},
+        alt
+      }
+    },
+
     aboutPreview{
       title,
       body,

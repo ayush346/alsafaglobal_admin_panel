@@ -16,6 +16,7 @@ import {
   FiLink
 } from 'react-icons/fi';
 import HeroSection from '../components/HeroSection';
+import EventBanner from '../components/EventBanner';
 import FeatureCard from '../components/FeatureCard';
 import DivisionCard from '../components/DivisionCard';
 import StatsSection from '../components/StatsSection';
@@ -235,6 +236,8 @@ const Home = () => {
         brandText={homeData?.brandText}
         brandColor={homeData?.brandColor}
       />
+
+      <EventBanner events={homeData?.homeEvents} />
 
       {/* 2. About Al Safa Global */}
       <section className="about-preview-section" ref={ref}>

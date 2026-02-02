@@ -63,6 +63,38 @@ export default {
           }
         ]
       },
+
+      {
+        name: 'homeEvents',
+        title: 'Event Banners',
+        type: 'array',
+        description: 'Rotating event banners displayed below the hero. Only enabled events are shown.',
+        of: [
+          {
+            type: 'object',
+            fields: [
+              { name: 'enabled', title: 'Show this event', type: 'boolean', initialValue: true },
+              { name: 'title', title: 'Title', type: 'string' },
+              { name: 'subtitle', title: 'Subtitle', type: 'text' },
+              { name: 'ctaLabel', title: 'Button Label', type: 'string' },
+              { name: 'ctaLink', title: 'Button Link', type: 'string' },
+              {
+                name: 'background',
+                title: 'Background Image',
+                type: 'image',
+                options: { hotspot: true },
+                fields: [
+                  { name: 'alt', title: 'Alt text', type: 'string' }
+                ]
+              }
+            ],
+            preview: {
+              select: { title: 'title' },
+              prepare: ({ title }) => ({ title: title || 'Event Banner' })
+            }
+          }
+        ]
+      },
   
       {
         name: 'aboutPreview',
