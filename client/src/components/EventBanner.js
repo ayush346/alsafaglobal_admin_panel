@@ -84,7 +84,7 @@ const EventBanner = ({ events = [] }) => {
             style={
               bgUrl
                 ? { backgroundImage: `url(${bgUrl})` }
-                : { background: 'var(--gradient-primary)' }
+                : { background: 'linear-gradient(135deg, #64748b 0%, #94a3b8 100%)' }
             }
           />
           <div className="event-banner-overlay" />
