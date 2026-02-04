@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import { urlFor } from '../sanityClient';
 import './EventBanner.css';
+import EventRegistrationModal from './EventRegistrationModal';
 
 const ROTATE_INTERVAL_MS = 5000;
 
@@ -11,6 +11,8 @@ const EventBanner = ({ events = [] }) => {
   const enabledEvents = (events || []).filter((e) => e?.enabled === true);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEventName, setSelectedEventName] = useState('');
 
   useEffect(() => {
     if (enabledEvents.length <= 1) return;
@@ -29,47 +31,29 @@ const EventBanner = ({ events = [] }) => {
 
   const CtaButton = () => {
     const label = currentEvent?.ctaLabel;
-    const link = currentEvent?.ctaLink;
     if (!label) return null;
-    const content = (
-      <>
+    return (
+      <button
+        type="button"
+        className="event-banner-cta"
+        onClick={() => {
+          setSelectedEventName(currentEvent?.title || 'Event');
+          setIsModalOpen(true);
+        }}
+      >
         {label}
         <FiArrowRight />
-      </>
-    );
-    if (link?.startsWith('http') || link?.startsWith('//')) {
-      return (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="event-banner-cta"
-        >
-          {content}
-        </a>
-      );
-    }
-    const href = link || '#';
-    if (href.startsWith('/') && href !== '#') {
-      return (
-        <Link to={href} className="event-banner-cta">
-          {content}
-        </Link>
-      );
-    }
-    return (
-      <a href={href} className="event-banner-cta">
-        {content}
-      </a>
+      </button>
     );
   };
 
   return (
-    <section
-      className="event-banner"
-      aria-live="polite"
-      aria-label="Event banner"
-    >
+    <>
+      <section
+        className="event-banner"
+        aria-live="polite"
+        aria-label="Event banner"
+      >
       <AnimatePresence mode="wait">
         <motion.div
           key={activeIndex}
@@ -115,7 +99,14 @@ const EventBanner = ({ events = [] }) => {
           ))}
         </div>
       )}
-    </section>
+      </section>
+
+      <EventRegistrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        eventName={selectedEventName}
+      />
+    </>
   );
 };
 

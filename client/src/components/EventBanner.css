@@ -74,6 +74,8 @@
   background: var(--white);
   border-radius: var(--radius-md);
   text-decoration: none;
+  border: none;
+  cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
