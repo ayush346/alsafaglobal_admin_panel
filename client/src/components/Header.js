@@ -2,12 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { client } from '../sanityClient';
+import { segmentsPageQuery } from '../queries/segmentsPageQuery';
 import './Header.css';
+
+const slugify = (s) =>
+  (s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'segment';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [segmentsDropdownOpen, setSegmentsDropdownOpen] = useState(false);
+  const [segments, setSegments] = useState([]);
   const location = useLocation();
+
+  useEffect(() => {
+    client.fetch(segmentsPageQuery).then((data) => {
+      const list = (data?.segments || [])
+        .filter((s) => s?.enabled !== false)
+        .map((s) => ({
+          title: s?.title || '',
+          slug: s?.slug ? String(s.slug).trim() || slugify(s?.title) : slugify(s?.title)
+        }))
+        .filter((s) => s.title && s.slug);
+      setSegments(list);
+    });
+  }, []);
 
   // Handle scroll effect
   useEffect(() => {
@@ -27,7 +50,7 @@ const Header = () => {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
-    { name: 'Segments', path: '/divisions' },
+    { name: 'Segments', path: '/divisions', isDropdown: true },
     { name: 'Contact', path: '/contact' }
   ];
 
@@ -103,19 +126,54 @@ const Header = () => {
           <nav className="nav-desktop">
             <ul className="nav-list">
               {navItems.map((item, index) => (
-                <motion.li 
+                <motion.li
                   key={item.name}
-                  className="nav-item"
+                  className={`nav-item ${item.isDropdown ? 'nav-item-dropdown' : ''}`}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  onMouseEnter={() => item.isDropdown && setSegmentsDropdownOpen(true)}
+                  onMouseLeave={() => item.isDropdown && setSegmentsDropdownOpen(false)}
                 >
-                  <Link 
-                    to={item.path}
-                    className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
-                  >
-                    {item.name}
-                  </Link>
+                  {item.isDropdown ? (
+                    <>
+                      <Link
+                        to={item.path}
+                        className={`nav-link nav-link-trigger ${isActive(item.path) ? 'active' : ''}`}
+                      >
+                        {item.name}
+                        <FiChevronDown className={`nav-chevron ${segmentsDropdownOpen ? 'open' : ''}`} />
+                      </Link>
+                      {segments.length > 0 && (
+                        <AnimatePresence>
+                          {segmentsDropdownOpen && (
+                            <motion.ul
+                              className="nav-dropdown"
+                              initial={{ opacity: 0, y: -8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -8 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              {segments.map((seg) => (
+                                <li key={seg.slug}>
+                                  <Link to={`${item.path}#${seg.slug}`} className="nav-dropdown-link">
+                                    {seg.title}
+                                  </Link>
+                                </li>
+                              ))}
+                            </motion.ul>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
+                    >
+                      {item.name}
+                    </Link>
+                  )}
                 </motion.li>
               ))}
               <motion.li 
@@ -189,19 +247,38 @@ const Header = () => {
               <nav className="nav-mobile">
                 <ul className="mobile-nav-list">
                   {navItems.map((item, index) => (
-                    <motion.li 
+                    <motion.li
                       key={item.name}
                       className="mobile-nav-item"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Link 
-                        to={item.path}
-                        className={`mobile-nav-link ${isActive(item.path) ? 'active' : ''}`}
-                      >
-                        {item.name}
-                      </Link>
+                      {item.isDropdown && segments.length > 0 ? (
+                        <div className="mobile-nav-segments">
+                          <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
+                          <ul className="mobile-nav-sublist">
+                            {segments.map((seg) => (
+                              <li key={seg.slug}>
+                                <Link
+                                  to={`${item.path}#${seg.slug}`}
+                                  className="mobile-nav-sublink"
+                                  onClick={() => setIsOpen(false)}
+                                >
+                                  {seg.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <Link
+                          to={item.path}
+                          className={`mobile-nav-link ${isActive(item.path) ? 'active' : ''}`}
+                        >
+                          {item.name}
+                        </Link>
+                      )}
                     </motion.li>
                   ))}
                   <motion.li 

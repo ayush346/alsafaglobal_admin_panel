@@ -45,7 +45,13 @@ export default {
                 title: 'Segment Title',
                 type: 'string'
               },
-  
+              {
+                name: 'slug',
+                title: 'URL Slug',
+                type: 'string',
+                description: 'Used in nav dropdown and section anchor (e.g. office-construction). Lowercase, hyphens only. Falls back to title if empty.'
+              },
+
               {
                 name: 'description',
                 title: 'Short Description',

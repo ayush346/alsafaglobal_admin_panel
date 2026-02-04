@@ -8,6 +8,7 @@ export const segmentsPageQuery = `
     segments[]{
       enabled,
       title,
+      slug,
       description,
       servicesTitle,
       services[]{

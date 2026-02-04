@@ -13,54 +13,38 @@ const Divisions = () => {
   const [segmentsData, setSegmentsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
 
-  // Scroll to specific section based on URL hash or query parameter
+  // Scroll to section on hash (first load, refresh, or in-page navigation)
   useEffect(() => {
-    const scrollToSection = () => {
-      // Helper function to scroll with header offset
-      const scrollToElementWithOffset = (element) => {
-        if (element) {
-          setTimeout(() => {
-            // Calculate responsive header height based on screen size
-            const isMobile = window.innerWidth <= 768;
-            const headerHeight = isMobile ? 90 : 100; // Slightly less for mobile, more for desktop
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+    const hash = location.hash?.replace('#', '');
+    if (!hash) return;
 
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          }, 100);
-        }
-      };
-
-      // Check for hash in URL (e.g., #office-construction)
-      const hash = location.hash;
-      if (hash) {
-        const element = document.querySelector(hash);
-        scrollToElementWithOffset(element);
-      }
-      
-      // Check for query parameter (e.g., ?section=office-construction)
-      const urlParams = new URLSearchParams(location.search);
-      const section = urlParams.get('section');
-      if (section) {
-        const element = document.getElementById(section);
-        scrollToElementWithOffset(element);
+    const scrollToElement = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
-    scrollToSection();
-  }, [location]);
+    // Small delay so DOM is ready (especially on first load/refresh)
+    const t = setTimeout(scrollToElement, 150);
+    return () => clearTimeout(t);
+  }, [location.pathname, location.hash]);
 
   useEffect(() => {
     client.fetch(segmentsPageQuery).then(setSegmentsData);
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
 
+  const slugify = (s) =>
+    (s || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'segment';
+
   const divisions = [
     {
       id: "office-construction",
+      slug: "office-construction",
       title: "Office, Construction & Infrastructure",
       description: "Comprehensive sourcing for building materials, tools, safety gear, MEP systems, IT hardware/software, and site essentials.",
       items: [
@@ -75,6 +59,7 @@ const Divisions = () => {
     },
     {
       id: "oil-gas",
+      slug: "oil-gas",
       title: "Oil & Gas",
       description: "Supply chain solutions for drilling, production, maintenance, safety, and instrumentation needs (upstream & downstream).",
       items: [
@@ -88,6 +73,7 @@ const Divisions = () => {
     },
     {
       id: "industrial-manufacturing",
+      slug: "industrial-manufacturing",
       title: "Industrial & Manufacturing",
       description: "Providing MRO supplies, automation components, PPE, bearings, motors, spare parts, and factory-grade consumables.",
       items: [
@@ -100,9 +86,9 @@ const Divisions = () => {
         "Tyres and Automobile Spare parts"
       ]
     },
-    
     {
       id: "aviation-marine",
+      slug: "aviation-marine",
       title: "Aviation, Marine & Shipping",
       description: "Sourcing engine parts, navigation equipment, deck machinery, safety gear, paints, coatings, and vessel maintenance items.",
       items: [
@@ -117,6 +103,7 @@ const Divisions = () => {
     },
     {
       id: "defence-sector",
+      slug: "defence-sector",
       title: "Defence Sector",
       description: "Discreet and reliable sourcing of tactical gear, technical equipment, uniforms, field supplies, and maintenance parts for military/government entities.",
       items: [
@@ -133,7 +120,7 @@ const Divisions = () => {
   const divisionsFromCMS = segmentsData?.segments
     ?.filter(seg => seg?.enabled !== false)
     ?.map(seg => ({
-      id: undefined,
+      slug: seg?.slug ? String(seg.slug).trim() || slugify(seg?.title) : slugify(seg?.title),
       title: seg?.title || '',
       description: seg?.description || '',
       servicesTitle: seg?.servicesTitle || 'Our Products & Services Include:',
@@ -207,7 +194,7 @@ const Divisions = () => {
           {divisionsToRender.map((division, index) => (
             <motion.div
               key={division.title}
-              id={division.id}
+              id={division.slug || division.id}
               className="division-section"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
