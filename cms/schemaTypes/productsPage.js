@@ -55,6 +55,13 @@ export default {
                 title: 'Short Description',
                 type: 'text'
               }
+              ,
+              {
+                name: 'segmentLink',
+                title: 'Target Segment URL',
+                type: 'string',
+                description: 'Target segment URL (e.g. /divisions#aviation-marine)'
+              }
   
             ]
           }

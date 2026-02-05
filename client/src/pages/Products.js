@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import './Divisions.css';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import useContent from '../hooks/useContent';
@@ -108,7 +108,12 @@ const Products = () => {
             >
               <div className="division-header">
                     <h2 data-cms-field="title">{product.title}</h2>
-                    <p className="division-description" data-cms-field="description">{product.description}</p>
+                            <p className="division-description" data-cms-field="description">{product.description}</p>
+                            {product.segmentLink && (
+                              <div style={{ marginTop: '12px' }}>
+                                <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
+                              </div>
+                            )}
               </div>
             </motion.div>
             ))}
