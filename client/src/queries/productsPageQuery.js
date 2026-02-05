@@ -2,13 +2,13 @@ export const productsPageQuery = `
 
   *[_type == "productsPage"][0]{
 
-    heroTitle,
+    title,
     intro,
 
     products[]{
       enabled,
-      id,
-      name,
+      title,
+      slug,
       description,
       image,
       servicesTitle,

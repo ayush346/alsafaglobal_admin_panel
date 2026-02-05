@@ -43,11 +43,11 @@ const Header = () => {
     // Populate products from CMS via useContent
     const list = (productsCms?.products || [])
       .filter((p) => p?.enabled !== false)
-      .map((p, idx) => ({
-        name: p?.name || '',
-        id: p?.id ? String(p.id).trim() : slugify(p?.name) + '-' + idx
+      .map((p) => ({
+        title: p?.title || '',
+        slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title)
       }))
-      .filter((p) => p.name && p.id);
+      .filter((p) => p.title && p.slug);
     setProducts(list);
   }, [productsCms]);
 
@@ -208,8 +208,8 @@ const Header = () => {
                             >
                               <li className="nav-dropdown-title">List of Products</li>
                               {products.map((prod) => (
-                                <li key={prod.id}>
-                                  <Link to={`${item.path}#${prod.id}`} className="nav-dropdown-link">
+                                <li key={prod.slug}>
+                                  <Link to={`${item.path}#${prod.slug}`} className="nav-dropdown-link">
                                     {prod.title}
                                   </Link>
                                 </li>
@@ -330,9 +330,9 @@ const Header = () => {
                             <ul className="mobile-nav-sublist">
                               <li className="mobile-dropdown-title">List of Products</li>
                               {products.map((prod) => (
-                                <li key={prod.id}>
-                                  <Link
-                                    to={`${item.path}#${prod.id}`}
+                              <li key={prod.slug}>
+                                <Link
+                                  to={`${item.path}#${prod.slug}`}
                                     className="mobile-nav-sublink"
                                     onClick={() => setIsOpen(false)}
                                   >

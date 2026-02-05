@@ -49,9 +49,9 @@ const Products = () => {
 
   const productsFromCMS = productsData?.products
     ?.filter(p => p?.enabled !== false)
-    ?.map((p, idx) => ({
-      id: p?.id ? String(p.id).trim() : slugify(p?.name) + '-' + idx,
-      name: p?.name || '',
+    ?.map((p) => ({
+      slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
+      title: p?.title || '',
       description: p?.description || '',
       image: p?.image || null,
       servicesTitle: p?.servicesTitle || 'Our Products & Services Include:',
@@ -76,7 +76,7 @@ const Products = () => {
             <h1
               dangerouslySetInnerHTML={{
                 __html: highlightBrand(
-                  productsData?.heroTitle || 'Al Safa Global Products',
+                  productsData?.title || 'Al Safa Global Products',
                   homeData?.brandText || 'Al Safa Global',
                   homeData?.brandColor
                 )
@@ -103,8 +103,8 @@ const Products = () => {
           <div data-cms-list="products">
             {productsToRender.map((product, index) => (
                 <motion.div
-                  key={product.name}
-                  id={product.id}
+                  key={product.slug}
+                  id={product.slug}
                   className="division-section"
                   data-cms-item
               initial={{ opacity: 0, y: 30 }}
@@ -113,7 +113,7 @@ const Products = () => {
               viewport={{ once: true }}
             >
               <div className="division-header">
-                    <h2 data-cms-field="name">{product.name}</h2>
+                    <h2 data-cms-field="title">{product.title}</h2>
                     <p className="division-description" data-cms-field="description">{product.description}</p>
               </div>
               
@@ -121,7 +121,7 @@ const Products = () => {
                 <h3>{product.servicesTitle || 'Our Products & Services Include:'}</h3>
                     {product.image && (
                       <div className="product-image">
-                        <img src={urlFor(product.image).url()} alt={product.name} />
+                        <img src={urlFor(product.image).url()} alt={product.title} />
                       </div>
                     )}
                 <ul className="division-items">
