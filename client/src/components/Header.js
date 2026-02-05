@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { client } from '../sanityClient';
 import { segmentsPageQuery } from '../queries/segmentsPageQuery';
+import { productsPageQuery } from '../queries/productsPageQuery';
 import './Header.css';
 
 const slugify = (s) =>
@@ -16,10 +17,13 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [segmentsDropdownOpen, setSegmentsDropdownOpen] = useState(false);
+  const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
   const [segments, setSegments] = useState([]);
+  const [products, setProducts] = useState([]);
   const location = useLocation();
 
   useEffect(() => {
+    // Fetch segments for Segments dropdown
     client.fetch(segmentsPageQuery).then((data) => {
       const list = (data?.segments || [])
         .filter((s) => s?.enabled !== false)
@@ -29,6 +33,18 @@ const Header = () => {
         }))
         .filter((s) => s.title && s.slug);
       setSegments(list);
+    });
+
+    // Fetch products for Products dropdown
+    client.fetch(productsPageQuery).then((data) => {
+      const list = (data?.products || [])
+        .filter((p) => p?.enabled !== false)
+        .map((p, idx) => ({
+          title: p?.title || '',
+          id: p?.id ? String(p.id).trim() : slugify(p?.title) + '-' + idx
+        }))
+        .filter((p) => p.title && p.id);
+      setProducts(list);
     });
   }, []);
 
@@ -51,6 +67,7 @@ const Header = () => {
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
     { name: 'Segments', path: '/divisions', isDropdown: true },
+    { name: 'Products', path: '/products', isDropdown: true },
     { name: 'Contact', path: '/contact' }
   ];
 
@@ -132,8 +149,16 @@ const Header = () => {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  onMouseEnter={() => item.isDropdown && setSegmentsDropdownOpen(true)}
-                  onMouseLeave={() => item.isDropdown && setSegmentsDropdownOpen(false)}
+                  onMouseEnter={() => {
+                    if (!item.isDropdown) return;
+                    if (item.name === 'Segments') setSegmentsDropdownOpen(true);
+                    if (item.name === 'Products') setProductsDropdownOpen(true);
+                  }}
+                  onMouseLeave={() => {
+                    if (!item.isDropdown) return;
+                    if (item.name === 'Segments') setSegmentsDropdownOpen(false);
+                    if (item.name === 'Products') setProductsDropdownOpen(false);
+                  }}
                 >
                   {item.isDropdown ? (
                     <>
@@ -142,9 +167,10 @@ const Header = () => {
                         className={`nav-link nav-link-trigger ${isActive(item.path) ? 'active' : ''}`}
                       >
                         {item.name}
-                        <FiChevronDown className={`nav-chevron ${segmentsDropdownOpen ? 'open' : ''}`} />
+                        <FiChevronDown className={`nav-chevron ${(item.name === 'Segments' ? segmentsDropdownOpen : productsDropdownOpen) ? 'open' : ''}`} />
                       </Link>
-                      {segments.length > 0 && (
+                      {/* Segments dropdown */}
+                      {item.name === 'Segments' && segments.length > 0 && (
                         <AnimatePresence>
                           {segmentsDropdownOpen && (
                             <motion.ul
@@ -158,6 +184,29 @@ const Header = () => {
                                 <li key={seg.slug}>
                                   <Link to={`${item.path}#${seg.slug}`} className="nav-dropdown-link">
                                     {seg.title}
+                                  </Link>
+                                </li>
+                              ))}
+                            </motion.ul>
+                          )}
+                        </AnimatePresence>
+                      )}
+
+                      {/* Products dropdown */}
+                      {item.name === 'Products' && products.length > 0 && (
+                        <AnimatePresence>
+                          {productsDropdownOpen && (
+                            <motion.ul
+                              className="nav-dropdown"
+                              initial={{ opacity: 0, y: -8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -8 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              {products.map((prod) => (
+                                <li key={prod.id}>
+                                  <Link to={`${item.path}#${prod.id}`} className="nav-dropdown-link">
+                                    {prod.title}
                                   </Link>
                                 </li>
                               ))}
@@ -254,7 +303,7 @@ const Header = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      {item.isDropdown && segments.length > 0 ? (
+                      {item.isDropdown && item.name === 'Segments' && segments.length > 0 ? (
                         <div className="mobile-nav-segments">
                           <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
                           <ul className="mobile-nav-sublist">
@@ -266,6 +315,23 @@ const Header = () => {
                                   onClick={() => setIsOpen(false)}
                                 >
                                   {seg.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : item.isDropdown && item.name === 'Products' && products.length > 0 ? (
+                        <div className="mobile-nav-segments">
+                          <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
+                          <ul className="mobile-nav-sublist">
+                            {products.map((prod) => (
+                              <li key={prod.id}>
+                                <Link
+                                  to={`${item.path}#${prod.id}`}
+                                  className="mobile-nav-sublink"
+                                  onClick={() => setIsOpen(false)}
+                                >
+                                  {prod.title}
                                 </Link>
                               </li>
                             ))}
