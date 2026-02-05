@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import './Divisions.css';
-import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
+import useContent from '../hooks/useContent';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
@@ -29,10 +29,16 @@ const Products = () => {
     return () => clearTimeout(t);
   }, [location.pathname, location.hash]);
 
+  const { data: productsCms } = useContent(productsPageQuery);
+  const { data: homeCms } = useContent(homePageQuery);
+
   useEffect(() => {
-    client.fetch(productsPageQuery).then(setProductsData);
-    client.fetch(homePageQuery).then(setHomeData);
-  }, []);
+    setProductsData(productsCms);
+  }, [productsCms]);
+
+  useEffect(() => {
+    setHomeData(homeCms);
+  }, [homeCms]);
 
   const slugify = (s) =>
     (s || '')
@@ -92,19 +98,21 @@ const Products = () => {
       {/* Products Content */}
       <section className="divisions-content">
         <div className="container">
-          {productsToRender.map((product, index) => (
-            <motion.div
-              key={product.title}
-              id={product.id}
-              className="division-section"
+          <div data-cms-list="products">
+            {productsToRender.map((product, index) => (
+                <motion.div
+                  key={product.title}
+                  id={product.id}
+                  className="division-section"
+                  data-cms-item
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
               <div className="division-header">
-                <h2>{product.title}</h2>
-                <p className="division-description">{product.description}</p>
+                    <h2 data-cms-field="name">{product.title}</h2>
+                    <p className="division-description" data-cms-field="description">{product.description}</p>
               </div>
               
               <div className="division-items-container">
@@ -124,7 +132,8 @@ const Products = () => {
                 </ul>
               </div>
             </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 

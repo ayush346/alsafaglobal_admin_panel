@@ -5,6 +5,7 @@ import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { client } from '../sanityClient';
 import { segmentsPageQuery } from '../queries/segmentsPageQuery';
 import { productsPageQuery } from '../queries/productsPageQuery';
+import useContent from '../hooks/useContent';
 import './Header.css';
 
 const slugify = (s) =>
@@ -22,8 +23,10 @@ const Header = () => {
   const [products, setProducts] = useState([]);
   const location = useLocation();
 
+  const { data: productsCms } = useContent(productsPageQuery);
+
   useEffect(() => {
-    // Fetch segments for Segments dropdown
+    // Fetch segments for Segments dropdown (unchanged behavior)
     client.fetch(segmentsPageQuery).then((data) => {
       const list = (data?.segments || [])
         .filter((s) => s?.enabled !== false)
@@ -34,19 +37,19 @@ const Header = () => {
         .filter((s) => s.title && s.slug);
       setSegments(list);
     });
-
-    // Fetch products for Products dropdown
-    client.fetch(productsPageQuery).then((data) => {
-      const list = (data?.products || [])
-        .filter((p) => p?.enabled !== false)
-        .map((p, idx) => ({
-          title: p?.title || '',
-          id: p?.id ? String(p.id).trim() : slugify(p?.title) + '-' + idx
-        }))
-        .filter((p) => p.title && p.id);
-      setProducts(list);
-    });
   }, []);
+
+  useEffect(() => {
+    // Populate products from CMS via useContent
+    const list = (productsCms?.products || [])
+      .filter((p) => p?.enabled !== false)
+      .map((p, idx) => ({
+        title: p?.title || '',
+        id: p?.id ? String(p.id).trim() : slugify(p?.title) + '-' + idx
+      }))
+      .filter((p) => p.title && p.id);
+    setProducts(list);
+  }, [productsCms]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -203,6 +206,7 @@ const Header = () => {
                               exit={{ opacity: 0, y: -8 }}
                               transition={{ duration: 0.2 }}
                             >
+                              <li className="nav-dropdown-title">List of Products</li>
                               {products.map((prod) => (
                                 <li key={prod.id}>
                                   <Link to={`${item.path}#${prod.id}`} className="nav-dropdown-link">
@@ -322,20 +326,21 @@ const Header = () => {
                         </div>
                       ) : item.isDropdown && item.name === 'Products' && products.length > 0 ? (
                         <div className="mobile-nav-segments">
-                          <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
-                          <ul className="mobile-nav-sublist">
-                            {products.map((prod) => (
-                              <li key={prod.id}>
-                                <Link
-                                  to={`${item.path}#${prod.id}`}
-                                  className="mobile-nav-sublink"
-                                  onClick={() => setIsOpen(false)}
-                                >
-                                  {prod.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                            <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
+                            <ul className="mobile-nav-sublist">
+                              <li className="mobile-dropdown-title">List of Products</li>
+                              {products.map((prod) => (
+                                <li key={prod.id}>
+                                  <Link
+                                    to={`${item.path}#${prod.id}`}
+                                    className="mobile-nav-sublink"
+                                    onClick={() => setIsOpen(false)}
+                                  >
+                                    {prod.title}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
                         </div>
                       ) : (
                         <Link
