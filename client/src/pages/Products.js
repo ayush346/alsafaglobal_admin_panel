@@ -51,7 +51,8 @@ const Products = () => {
     ?.map((p) => ({
       slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
       title: p?.title || '',
-      description: p?.description || ''
+      description: p?.description || '',
+      segmentLink: p?.segmentLink || ''
     }));
 
   const productsToRender = (productsFromCMS && productsFromCMS.length) ? productsFromCMS : [];

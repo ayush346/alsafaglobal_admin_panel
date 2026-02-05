@@ -9,7 +9,8 @@ export const productsPageQuery = `
       enabled,
       title,
       slug,
-      description
+      description,
+      segmentLink
     }
 
   }
