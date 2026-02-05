@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import './Divisions.css';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import useContent from '../hooks/useContent';
+import { urlFor } from '../sanityClient';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
@@ -49,9 +50,10 @@ const Products = () => {
   const productsFromCMS = productsData?.products
     ?.filter(p => p?.enabled !== false)
     ?.map((p, idx) => ({
-      id: p?.id ? String(p.id).trim() : slugify(p?.title) + '-' + idx,
-      title: p?.title || '',
+      id: p?.id ? String(p.id).trim() : slugify(p?.name) + '-' + idx,
+      name: p?.name || '',
       description: p?.description || '',
+      image: p?.image || null,
       servicesTitle: p?.servicesTitle || 'Our Products & Services Include:',
       items: (p?.services || [])
         .filter(s => s?.enabled !== false)
@@ -101,7 +103,7 @@ const Products = () => {
           <div data-cms-list="products">
             {productsToRender.map((product, index) => (
                 <motion.div
-                  key={product.title}
+                  key={product.name}
                   id={product.id}
                   className="division-section"
                   data-cms-item
@@ -111,12 +113,17 @@ const Products = () => {
               viewport={{ once: true }}
             >
               <div className="division-header">
-                    <h2 data-cms-field="name">{product.title}</h2>
+                    <h2 data-cms-field="name">{product.name}</h2>
                     <p className="division-description" data-cms-field="description">{product.description}</p>
               </div>
               
               <div className="division-items-container">
                 <h3>{product.servicesTitle || 'Our Products & Services Include:'}</h3>
+                    {product.image && (
+                      <div className="product-image">
+                        <img src={urlFor(product.image).url()} alt={product.name} />
+                      </div>
+                    )}
                 <ul className="division-items">
                   {(product.items || []).map((item, itemIndex) => (
                     <motion.li 

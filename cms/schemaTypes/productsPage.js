@@ -37,14 +37,20 @@ export default {
               description: 'Used as the section anchor and nav hash (e.g. product-abc). If empty a slugified title will be used.'
             },
             {
-              name: 'title',
-              title: 'Product Title',
+              name: 'name',
+              title: 'Product Name',
               type: 'string'
             },
             {
               name: 'description',
               title: 'Short Description',
               type: 'text'
+            },
+            {
+              name: 'image',
+              title: 'Product Image',
+              type: 'image',
+              options: { hotspot: true }
             },
             {
               name: 'servicesTitle',

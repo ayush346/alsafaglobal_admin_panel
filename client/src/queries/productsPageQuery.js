@@ -8,8 +8,9 @@ export const productsPageQuery = `
     products[]{
       enabled,
       id,
-      title,
+      name,
       description,
+      image,
       servicesTitle,
       services[]{
         text,

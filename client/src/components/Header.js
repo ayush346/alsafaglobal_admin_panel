@@ -44,10 +44,10 @@ const Header = () => {
     const list = (productsCms?.products || [])
       .filter((p) => p?.enabled !== false)
       .map((p, idx) => ({
-        title: p?.title || '',
-        id: p?.id ? String(p.id).trim() : slugify(p?.title) + '-' + idx
+        name: p?.name || '',
+        id: p?.id ? String(p.id).trim() : slugify(p?.name) + '-' + idx
       }))
-      .filter((p) => p.title && p.id);
+      .filter((p) => p.name && p.id);
     setProducts(list);
   }, [productsCms]);
 
