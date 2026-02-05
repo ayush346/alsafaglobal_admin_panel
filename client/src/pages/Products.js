@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import './Divisions.css';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import useContent from '../hooks/useContent';
-import { urlFor } from '../sanityClient';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
@@ -52,12 +51,7 @@ const Products = () => {
     ?.map((p) => ({
       slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
       title: p?.title || '',
-      description: p?.description || '',
-      image: p?.image || null,
-      servicesTitle: p?.servicesTitle || 'Our Products & Services Include:',
-      items: (p?.services || [])
-        .filter(s => s?.enabled !== false)
-        .map(s => s?.text || '')
+      description: p?.description || ''
     }));
 
   const productsToRender = (productsFromCMS && productsFromCMS.length) ? productsFromCMS : [];
@@ -115,28 +109,6 @@ const Products = () => {
               <div className="division-header">
                     <h2 data-cms-field="title">{product.title}</h2>
                     <p className="division-description" data-cms-field="description">{product.description}</p>
-              </div>
-              
-              <div className="division-items-container">
-                <h3>{product.servicesTitle || 'Our Products & Services Include:'}</h3>
-                    {product.image && (
-                      <div className="product-image">
-                        <img src={urlFor(product.image).url()} alt={product.title} />
-                      </div>
-                    )}
-                <ul className="division-items">
-                  {(product.items || []).map((item, itemIndex) => (
-                    <motion.li 
-                      key={itemIndex}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: itemIndex * 0.1 }}
-                      viewport={{ once: true }}
-                    >
-                      {item}
-                    </motion.li>
-                  ))}
-                </ul>
               </div>
             </motion.div>
             ))}

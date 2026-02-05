@@ -54,36 +54,6 @@ export default {
                 name: 'description',
                 title: 'Short Description',
                 type: 'text'
-              },
-
-              {
-                name: 'image',
-                title: 'Product Image',
-                type: 'image',
-                options: { hotspot: true }
-              },
-  
-              {
-                name: 'servicesTitle',
-                title: 'Services Section Heading',
-                type: 'string',
-                initialValue: 'Our Products & Services Include:'
-              },
-  
-              {
-                name: 'services',
-                title: 'Services List',
-                type: 'array',
-  
-                of: [
-                  {
-                    type: 'object',
-                    fields: [
-                      { name: 'text', title: 'Service Item', type: 'string' },
-                      { name: 'enabled', title: 'Show This Item', type: 'boolean', initialValue: true }
-                    ]
-                  }
-                ]
               }
   
             ]

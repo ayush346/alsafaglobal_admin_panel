@@ -9,13 +9,7 @@ export const productsPageQuery = `
       enabled,
       title,
       slug,
-      description,
-      image,
-      servicesTitle,
-      services[]{
-        text,
-        enabled
-      }
+      description
     }
 
   }
