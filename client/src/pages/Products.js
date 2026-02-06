@@ -32,12 +32,21 @@ const Products = () => {
 
   const productsFromCMS = productsData?.products
     ?.filter(p => p?.enabled !== false)
-    ?.map((p) => ({
-      slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
-      title: p?.title || '',
-      description: p?.description || '',
-      segmentLink: p?.segmentLink || ''
-    }));
+    ?.map((p) => {
+      // Convert segmentLink: if it's a segment title, slugify and build full URL
+      let segmentLink = p?.segmentLink || '';
+      if (segmentLink && !segmentLink.startsWith('/')) {
+        // User entered segment title (e.g., "Office, Construction & Infrastructure")
+        // Convert to URL format: /divisions#office-construction
+        segmentLink = `/divisions#${slugify(segmentLink)}`;
+      }
+      return {
+        slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
+        title: p?.title || '',
+        description: p?.description || '',
+        segmentLink: segmentLink
+      };
+    });
 
   const productsToRender = (productsFromCMS && productsFromCMS.length) ? productsFromCMS : [];
 

@@ -60,7 +60,7 @@ export default {
                 name: 'segmentLink',
                 title: 'Target Segment URL',
                 type: 'string',
-                description: 'Target segment URL (e.g. /divisions#aviation-marine)'
+                 description: 'Enter the segment URL slug (e.g., office-construction, oil-gas, aviation-marine). Matches the "URL Slug" field in Segments page.'
               }
   
             ]
