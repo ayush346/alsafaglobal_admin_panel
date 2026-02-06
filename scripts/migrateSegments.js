@@ -10,9 +10,9 @@
  *   SANITY_TOKEN - Sanity auth token with write permissions
  */
 
-const sanityClient = require('@sanity/client');
+const { createClient } = require('@sanity/client');
 
-const client = sanityClient({
+const client = createClient({
   projectId: process.env.SANITY_PROJECT_ID,
   dataset: process.env.SANITY_DATASET || 'production',
   token: process.env.SANITY_TOKEN,
