@@ -7,28 +7,15 @@ import { segmentsPageQuery } from '../queries/segmentsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
+import useHashScroll from '../hooks/useHashScroll';
 
 const Divisions = () => {
   const location = useLocation();
   const [segmentsData, setSegmentsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
 
-  // Scroll to section on hash (first load, refresh, or in-page navigation)
-  useEffect(() => {
-    const hash = location.hash?.replace('#', '');
-    if (!hash) return;
-
-    const scrollToElement = () => {
-      const el = document.getElementById(hash);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    };
-
-    // Small delay so DOM is ready (especially on first load/refresh)
-    const t = setTimeout(scrollToElement, 150);
-    return () => clearTimeout(t);
-  }, [location.pathname, location.hash]);
+  // Use custom hook for reliable hash-based scrolling
+  useHashScroll();
 
   useEffect(() => {
     client.fetch(segmentsPageQuery).then(setSegmentsData);
