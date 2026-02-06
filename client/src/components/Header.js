@@ -26,17 +26,19 @@ const Header = () => {
   const { data: productsCms } = useContent(productsPageQuery);
 
   useEffect(() => {
-    // Fetch segments for Segments dropdown (unchanged behavior)
+    // Fetch segments for Segments dropdown
     client.fetch(segmentsPageQuery).then((data) => {
+      console.log('Segments Page Query Result:', data);
       const list = (data?.segments || [])
         .filter((s) => s?.enabled !== false)
         .map((s) => ({
-          title: s?.title || '',
-          slug: s?.slug ? String(s.slug).trim() || slugify(s?.title) : slugify(s?.title)
+          title: s?.segmentRef?.title || '',
+          slug: s?.segmentRef?.slug ? String(s.segmentRef.slug).trim() || slugify(s?.segmentRef?.title) : slugify(s?.segmentRef?.title)
         }))
         .filter((s) => s.title && s.slug);
+      console.log('Processed segments for dropdown:', list);
       setSegments(list);
-    });
+    }).catch((err) => console.error('Error fetching segments page:', err));
   }, []);
 
   useEffect(() => {
