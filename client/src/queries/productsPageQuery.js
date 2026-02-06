@@ -10,7 +10,11 @@ export const productsPageQuery = `
       title,
       slug,
       description,
-      segmentLink
+      segmentLink,
+      segmentRef->{
+        slug,
+        title
+      }
     }
 
   }

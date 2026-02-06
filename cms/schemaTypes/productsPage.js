@@ -54,13 +54,21 @@ export default {
                 name: 'description',
                 title: 'Short Description',
                 type: 'text'
-              }
-              ,
+              },
+
+              {
+                name: 'segmentRef',
+                title: 'Link to Segment',
+                type: 'reference',
+                to: [{ type: 'segment' }],
+                description: 'Select a segment. The "View Services" button will navigate to this segment.'
+              },
+
               {
                 name: 'segmentLink',
-                title: 'Target Segment URL',
+                title: 'Target Segment URL (Deprecated)',
                 type: 'string',
-                 description: 'Enter the segment URL slug (e.g., office-construction, oil-gas, aviation-marine). Matches the "URL Slug" field in Segments page.'
+                description: '[Kept for backward compatibility] Use "Link to Segment" field instead.'
               }
   
             ]
