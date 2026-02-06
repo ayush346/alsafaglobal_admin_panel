@@ -26,61 +26,23 @@ export default {
         name: 'segments',
         title: 'Business Segments',
         type: 'array',
-  
         of: [
           {
             type: 'object',
-  
             fields: [
-  
               {
                 name: 'enabled',
                 title: 'Show This Segment',
                 type: 'boolean',
                 initialValue: true
               },
-  
               {
-                name: 'title',
-                title: 'Segment Title',
-                type: 'string'
-              },
-              {
-                name: 'slug',
-                title: 'URL Slug',
-                type: 'string',
-                description: 'Used in nav dropdown and section anchor (e.g. office-construction). Lowercase, hyphens only. Falls back to title if empty.'
-              },
-
-              {
-                name: 'description',
-                title: 'Short Description',
-                type: 'text'
-              },
-  
-              {
-                name: 'servicesTitle',
-                title: 'Services Section Heading',
-                type: 'string',
-                initialValue: 'Our Products & Services Include:'
-              },
-  
-              {
-                name: 'services',
-                title: 'Services List',
-                type: 'array',
-  
-                of: [
-                  {
-                    type: 'object',
-                    fields: [
-                      { name: 'text', title: 'Service Item', type: 'string' },
-                      { name: 'enabled', title: 'Show This Item', type: 'boolean', initialValue: true }
-                    ]
-                  }
-                ]
+                name: 'segmentRef',
+                title: 'Segment',
+                type: 'reference',
+                to: [{ type: 'segment' }],
+                description: 'Select a segment to include on this page.'
               }
-  
             ]
           }
         ]

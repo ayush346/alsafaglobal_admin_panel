@@ -7,13 +7,15 @@ export const segmentsPageQuery = `
 
     segments[]{
       enabled,
-      title,
-      slug,
-      description,
-      servicesTitle,
-      services[]{
-        text,
-        enabled
+      segmentRef->{
+        title,
+        slug,
+        description,
+        servicesTitle,
+        services[]{
+          text,
+          enabled
+        }
       }
     },
 

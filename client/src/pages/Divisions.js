@@ -133,15 +133,18 @@ const Divisions = () => {
 
   const divisionsFromCMS = segmentsData?.segments
     ?.filter(seg => seg?.enabled !== false)
-    ?.map(seg => ({
-      slug: seg?.slug ? String(seg.slug).trim() || slugify(seg?.title) : slugify(seg?.title),
-      title: seg?.title || '',
-      description: seg?.description || '',
-      servicesTitle: seg?.servicesTitle || 'Our Products & Services Include:',
-      items: (seg?.services || [])
-        .filter(s => s?.enabled !== false)
-        .map(s => s?.text || '')
-    }));
+    ?.map(seg => {
+      const ref = seg?.segmentRef || {};
+      return {
+        slug: ref?.slug ? String(ref.slug).trim() || slugify(ref?.title) : slugify(ref?.title),
+        title: ref?.title || '',
+        description: ref?.description || '',
+        servicesTitle: ref?.servicesTitle || 'Our Products & Services Include:',
+        items: (ref?.services || [])
+          .filter(s => s?.enabled !== false)
+          .map(s => s?.text || '')
+      };
+    });
   const divisionsToRender = (divisionsFromCMS && divisionsFromCMS.length) ? divisionsFromCMS : divisions;
 
   const whyChooseItemsDefault = [
