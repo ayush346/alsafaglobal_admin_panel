@@ -13,6 +13,29 @@ const Products = () => {
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
 
+  // Robust hash-scroll logic for dropdown navigation
+  useEffect(() => {
+    const hash = location.hash?.replace('#', '');
+    if (!hash || !productsData?.products) return;
+
+    let attemptCount = 0;
+    const maxAttempts = 10;
+    const attemptScroll = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        requestAnimationFrame(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        return;
+      }
+      attemptCount++;
+      if (attemptCount < maxAttempts) {
+        setTimeout(attemptScroll, 100);
+      }
+    };
+    setTimeout(attemptScroll, 150);
+  }, [location.hash, productsData]);
+
   const { data: productsCms } = useContent(productsPageQuery);
   const { data: homeCms } = useContent(homePageQuery);
 
