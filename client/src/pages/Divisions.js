@@ -7,15 +7,42 @@ import { segmentsPageQuery } from '../queries/segmentsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
-import useHashScroll from '../hooks/useHashScroll';
 
 const Divisions = () => {
   const location = useLocation();
   const [segmentsData, setSegmentsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
 
-  // Use custom hook for reliable hash-based scrolling
-  useHashScroll();
+  // DOM-safe hash scrolling: waits for segments to render, retries if element not found
+  useEffect(() => {
+    const hash = location.hash?.replace('#', '');
+    if (!hash || !segmentsData?.segments) return; // Wait for segments to load
+
+    let attemptCount = 0;
+    const maxAttempts = 10; // Retry up to 10 times over ~1 second
+    
+    const attemptScroll = () => {
+      const el = document.getElementById(hash);
+      
+      if (el) {
+        // Element found, scroll immediately
+        requestAnimationFrame(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        return; // Stop retrying
+      }
+      
+      // Element not found yet, retry
+      attemptCount++;
+      if (attemptCount < maxAttempts) {
+        setTimeout(attemptScroll, 100); // Retry every 100ms
+      }
+      // If max attempts reached, stop silently (element doesn't exist)
+    };
+
+    // Start first attempt: wait 150ms for Framer Motion animations to settle
+    setTimeout(attemptScroll, 150);
+  }, [location.hash, segmentsData]);
 
   useEffect(() => {
     client.fetch(segmentsPageQuery).then(setSegmentsData);

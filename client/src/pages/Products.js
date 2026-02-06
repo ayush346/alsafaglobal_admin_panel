@@ -7,15 +7,11 @@ import useContent from '../hooks/useContent';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
-import useHashScroll from '../hooks/useHashScroll';
 
 const Products = () => {
   const location = useLocation();
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
-
-  // Use custom hook for reliable hash-based scrolling
-  useHashScroll();
 
   const { data: productsCms } = useContent(productsPageQuery);
   const { data: homeCms } = useContent(homePageQuery);
