@@ -1,4 +1,3 @@
-export default Products;
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, Link } from 'react-router-dom';
@@ -12,8 +11,22 @@ import BrandText from '../components/BrandText';
 const Products = () => {
   const location = useLocation();
   const [productsData, setProductsData] = useState(null);
+  const [homeData, setHomeData] = useState(null);
+
+  const { data: productsCms } = useContent(productsPageQuery);
+  const { data: homeCms } = useContent(homePageQuery);
+
+  useEffect(() => {
+    setProductsData(productsCms);
+  }, [productsCms]);
+
+  useEffect(() => {
+    setHomeData(homeCms);
+  }, [homeCms]);
+
   // Render productGroups from CMS
   const productGroups = productsData?.productGroups || [];
+export default Products;
 
   return (
     <div className="divisions-page">
