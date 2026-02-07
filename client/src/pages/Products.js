@@ -140,10 +140,6 @@ const Products = () => {
 export default Products;
 
 // Helper component for per-segment division with local show more state
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { urlFor } from '../sanityClient';
 
 function SegmentProductsDivision({ segmentTitle, products }) {
   const [showAll, setShowAll] = useState(false);
