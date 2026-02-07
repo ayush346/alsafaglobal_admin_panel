@@ -68,43 +68,33 @@ export default Products;
         <div className="container">
           {productGroups.map((group, groupIdx) => (
             <div className="division-section" key={groupIdx} style={{ marginBottom: '40px' }}>
-              <div className="container">
-                {productGroups.map((group, groupIdx) => {
-                  return (
-                    <div className="division-section" key={groupIdx} style={{ marginBottom: '40px' }}>
-                      <div className="division-header">
-                        <h2>{group.title}</h2>
-                      </div>
-                      <div className="products-group-list">
-                        {group.products && group.products.length > 0 && group.products.map((product, idx) => {
-                          return (
-                            <div className="product-item" key={idx} style={{ marginBottom: '24px' }}>
-                              <h3>{product.name}</h3>
-                              {product.image && product.image.asset && (
-                                <div className="division-image" style={{ marginBottom: '12px' }}>
-                                  <img
-                                    src={product.image.asset.url}
-                                    alt={product.name}
-                                    style={{ maxWidth: '220px', width: '100%', borderRadius: '8px' }}
-                                  />
-                                </div>
-                              )}
-                              <p>{product.description}</p>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {group.segmentRef && group.segmentRef.slug && (
-                        <div style={{ marginTop: '16px' }}>
-                          <Link to={`/divisions#${group.segmentRef.slug}`} className="btn btn-secondary">
-                            View Services
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+              <div className="division-header">
+                <h2>{group.title}</h2>
               </div>
+              <div className="products-group-list">
+                {group.products && group.products.length > 0 && group.products.map((product, idx) => (
+                  <div className="product-item" key={idx} style={{ marginBottom: '24px' }}>
+                    <h3>{product.name}</h3>
+                    {product.image && product.image.asset && (
+                      <div className="division-image" style={{ marginBottom: '12px' }}>
+                        <img
+                          src={product.image.asset.url}
+                          alt={product.name}
+                          style={{ maxWidth: '220px', width: '100%', borderRadius: '8px' }}
+                        />
+                      </div>
+                    )}
+                    <p>{product.description}</p>
+                  </div>
+                ))}
+              </div>
+              {group.segmentRef && group.segmentRef.slug && (
+                <div style={{ marginTop: '16px' }}>
+                  <Link to={`/divisions#${group.segmentRef.slug}`} className="btn btn-secondary">
+                    View Services
+                  </Link>
+                </div>
+              )}
             </div>
           ))}
         </div>
