@@ -33,15 +33,12 @@ const Products = () => {
   const productsFromCMS = productsData?.products
     ?.filter(p => p?.enabled !== false)
     ?.map((p) => {
-      // Prioritize segmentRef (new approach): use referenced segment slug
       let segmentLink = '';
       if (p?.segmentRef?.slug) {
         segmentLink = `/divisions#${p.segmentRef.slug}`;
       } else if (p?.segmentLink) {
-        // Fallback to segmentLink string (legacy approach)
         segmentLink = p.segmentLink;
         if (!segmentLink.startsWith('/')) {
-          // User entered segment slug or title, slugify and build URL
           segmentLink = `/divisions#${slugify(segmentLink)}`;
         }
       }
@@ -49,7 +46,8 @@ const Products = () => {
         slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
         title: p?.title || '',
         description: p?.description || '',
-        segmentLink: segmentLink
+        segmentLink: segmentLink,
+        image: p?.image || null
       };
     });
 
@@ -100,21 +98,30 @@ const Products = () => {
                   id={product.slug}
                   className="division-section"
                   data-cms-item
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <div className="division-header">
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="division-header">
                     <h2 data-cms-field="title">{product.title}</h2>
-                            <p className="division-description" data-cms-field="description">{product.description}</p>
-                            {product.segmentLink && (
-                              <div style={{ marginTop: '12px' }}>
-                                <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
-                              </div>
-                            )}
-              </div>
-            </motion.div>
+                    {product.image && product.image.asset && (
+                      <div className="division-image" style={{ marginBottom: '16px' }}>
+                        <img
+                          src={product.image.asset.url}
+                          alt={product.title}
+                          style={{ maxWidth: '320px', width: '100%', borderRadius: '8px' }}
+                        />
+                      </div>
+                    )}
+                    <p className="division-description" data-cms-field="description">{product.description}</p>
+                    {product.segmentLink && (
+                      <div style={{ marginTop: '12px' }}>
+                        <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
             ))}
           </div>
         </div>
