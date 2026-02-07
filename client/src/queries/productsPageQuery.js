@@ -2,7 +2,7 @@ export const productsPageQuery = `
 *[_type == "productsPage"][0]{
   title,
   intro,
-  "productGroups": coalesce(productGroups, []) {
+  productGroups[]{
     title,
     segmentRef->{
       _id,
@@ -19,3 +19,6 @@ export const productsPageQuery = `
   }
 }
 `;
+
+// Temporary: fetch the entire raw document to debug field names
+export const productsPageRawQuery = `*[_type == "productsPage"][0]`;
