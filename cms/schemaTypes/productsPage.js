@@ -4,6 +4,40 @@ export default {
     type: 'document',
   
     fields: [
+      // PRODUCT GROUPS
+      {
+        name: 'productGroups',
+        title: 'Product Groups',
+        type: 'array',
+        of: [
+          {
+            type: 'object',
+            fields: [
+              {
+                name: 'title',
+                title: 'Group Title',
+                type: 'string',
+              },
+              {
+                name: 'products',
+                title: 'Products in Group',
+                type: 'array',
+                of: [
+                  { type: 'reference', to: [{ type: 'product' }] }
+                ],
+                description: 'Select products to include in this group.'
+              },
+              {
+                name: 'segmentRef',
+                title: 'Link to Segment',
+                type: 'reference',
+                to: [{ type: 'segment' }],
+                description: 'The "View Services" button for this group will link to this segment.'
+              }
+            ]
+          }
+        ]
+      },
   
       // PAGE HEADER
       {
