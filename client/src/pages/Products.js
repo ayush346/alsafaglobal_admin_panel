@@ -22,6 +22,23 @@ const Products = () => {
       {productsData.productGroups.map((group, i) => (
         <div key={i} style={{margin:'2.5rem 0',padding:'1.5rem',border:'1px solid #eee',borderRadius:'8px',background:'#fafbfc'}}>
           <h2 style={{fontSize:'1.4rem',marginBottom:'1rem'}}>{group.title}</h2>
+          {group.segmentRef && group.segmentRef.slug && (
+            <a
+              href={`/segments/${group.segmentRef.slug}`}
+              style={{
+                display: 'inline-block',
+                marginBottom: '1rem',
+                padding: '0.5rem 1.2rem',
+                background: '#007bff',
+                color: '#fff',
+                borderRadius: '4px',
+                textDecoration: 'none',
+                fontWeight: 500
+              }}
+            >
+              View Services
+            </a>
+          )}
           {group.products && group.products.length > 0 ? (
             <div style={{display:'flex',flexWrap:'wrap',gap:'2rem'}}>
               {group.products.map((product, j) => (
