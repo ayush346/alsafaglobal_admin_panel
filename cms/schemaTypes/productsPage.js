@@ -56,13 +56,22 @@ export default {
                 type: 'text'
               },
 
-              {
-                name: 'segmentRef',
-                title: 'Link to Segment',
-                type: 'reference',
-                to: [{ type: 'segment' }],
-                description: 'Select a segment. The "View Services" button will navigate to this segment.'
-              },
+                {
+                  name: 'image',
+                  title: 'Product Image',
+                  type: 'image',
+                  options: {
+                    hotspot: true
+                  },
+                  description: 'Upload an image for this product.'
+                },
+                {
+                  name: 'segmentRef',
+                  title: 'Link to Segment',
+                  type: 'reference',
+                  to: [{ type: 'segment' }],
+                  description: 'Select a segment. The "View Services" button will navigate to this segment.'
+                },
 
               {
                 name: 'segmentLink',
