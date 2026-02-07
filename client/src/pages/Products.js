@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
@@ -52,12 +53,12 @@ const Products = () => {
               <div key={i} className="product-group-card">
                 <h2>{group.title}</h2>
                 {group.segmentRef && group.segmentRef.slug && (
-                  <a
-                    href={`/divisions#${group.segmentRef.slug}`}
+                  <Link
+                    to={`/divisions#${group.segmentRef.slug}`}
                     className="view-services-btn"
                   >
                     View Services
-                  </a>
+                  </Link>
                 )}
                 {group.products && group.products.length > 0 ? (
                   <div className="products-grid">
