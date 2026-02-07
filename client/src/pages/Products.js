@@ -12,7 +12,7 @@ const Products = () => {
 
   return (
     <div style={{maxWidth:'900px',margin:'0 auto',padding:'2rem'}}>
-      <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto',marginBottom:'2rem'}}>DEBUG: {JSON.stringify(productsData, null, 2)}</pre>
+      {/* Debug output removed for production */}
       <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}}>{productsData.title || 'Products'}</h1>
       {productsData.intro && Array.isArray(productsData.intro) && productsData.intro.map((block, i) => (
         <p key={i}>{block.children?.[0]?.text || ''}</p>
