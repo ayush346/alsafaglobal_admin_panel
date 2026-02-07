@@ -121,64 +121,6 @@
   text-align: center;
 }
 
-/* Segments Navigation Section */
-.segments-nav-section {
-  padding: 3rem 0 4rem;
-  background: var(--white-gray, #f8f9fa);
-}
-
-.segments-nav-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 2rem;
-}
-
-.segments-nav-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.segment-nav-card {
-  background: var(--white, #fff);
-  border: 1px solid rgba(30, 58, 138, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-
-.segment-nav-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.segment-nav-card h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.segment-nav-card p {
-  font-size: 0.9rem;
-  color: var(--text-secondary, #555);
-  line-height: 1.5;
-  flex: 1;
-  margin-bottom: 1rem;
-}
-
-.segment-nav-card .view-services-btn {
-  align-self: flex-start;
-  margin-bottom: 0;
-}
-
 @media (max-width: 768px) {
   .products-hero {
     padding: 5rem 1rem 1.5rem;

@@ -4,6 +4,7 @@ export const productsPageQuery = `
   intro,
   productGroups[]{
     title,
+    segmentSlug,
     products[]{
       name,
       description,

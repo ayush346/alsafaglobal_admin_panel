@@ -43,6 +43,12 @@ export default {
                 },
               ],
             },
+            {
+              name: 'segmentSlug',
+              title: 'Link to Segment (slug)',
+              type: 'string',
+              description: 'Enter the slug of the segment to link "View Services" to (e.g. office-construction, oil-gas, defence-sector). Must match a slug from the Segments Page.',
+            },
           ],
         },
       ],
