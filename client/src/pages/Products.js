@@ -1,5 +1,6 @@
 import useContent from "../hooks/useContent";
 import { productsPageQuery } from "../queries/productsPageQuery";
+import BrandText from "../components/BrandText";
 
 const Products = () => {
   const { data: productsData, loading, error } = useContent(productsPageQuery);
@@ -13,7 +14,9 @@ const Products = () => {
   return (
     <div style={{maxWidth:'900px',margin:'0 auto',padding:'2rem'}}>
       {/* Debug output removed for production */}
-      <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}}>{productsData.title || 'Products'}</h1>
+      <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}}>
+        <BrandText brandText={productsData.title || 'Products'} />
+      </h1>
       {productsData.intro && Array.isArray(productsData.intro) && productsData.intro.map((block, i) => (
         <p key={i}>{block.children?.[0]?.text || ''}</p>
       ))}
