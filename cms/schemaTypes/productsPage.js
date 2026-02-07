@@ -24,20 +24,16 @@ export default {
         name: 'products',
         title: 'Products',
         type: 'array',
-  
         of: [
           {
             type: 'object',
-  
             fields: [
-  
               {
                 name: 'enabled',
                 title: 'Show This Product',
                 type: 'boolean',
                 initialValue: true
               },
-  
               {
                 name: 'title',
                 title: 'Product Title',
@@ -49,13 +45,18 @@ export default {
                 type: 'string',
                 description: 'Used in nav dropdown and section anchor (e.g. product-abc). Lowercase, hyphens only. Falls back to title if empty.'
               },
-
               {
                 name: 'description',
                 title: 'Short Description',
                 type: 'text'
               },
-
+              {
+                name: 'image',
+                title: 'Product Image',
+                type: 'image',
+                options: { hotspot: true },
+                description: 'Upload an image for this product.'
+              },
               {
                 name: 'segmentRef',
                 title: 'Link to Segment',
@@ -63,14 +64,12 @@ export default {
                 to: [{ type: 'segment' }],
                 description: 'Select a segment. The "View Services" button will navigate to this segment.'
               },
-
               {
                 name: 'segmentLink',
                 title: 'Target Segment URL (Deprecated)',
                 type: 'string',
                 description: '[Kept for backward compatibility] Use "Link to Segment" field instead.'
               }
-  
             ]
           }
         ]
