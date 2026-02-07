@@ -1,3 +1,5 @@
+import useContent from "../hooks/useContent";
+import { productsPageQuery } from "../queries/productsPageQuery";
 
 const Products = () => {
   const { data: productsData, loading, error } = useContent(productsPageQuery);
