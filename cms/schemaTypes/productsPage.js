@@ -23,7 +23,11 @@ export default {
                 title: 'Products in Group',
                 type: 'array',
                 of: [
-                  { type: 'reference', to: [{ type: 'product' }] }
+                  {
+                    type: 'string',
+                    title: 'Product Slug',
+                    description: 'Enter the slug of a product from the products list above.'
+                  }
                 ],
                 description: 'Select products to include in this group.'
               },
