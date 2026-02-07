@@ -89,43 +89,45 @@ const Products = () => {
       </section>
 
       {/* Products Content */}
-      <section className="divisions-content">
+      <section className="products-amazon-layout">
         <div className="container">
-          <div data-cms-list="products">
+          <div className="products-grid">
             {productsToRender.map((product, index) => (
-                <motion.div
-                  key={product.slug}
-                  id={product.slug}
-                  className="division-section"
-                  data-cms-item
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="division-header">
-                    <h2 data-cms-field="title">{product.title}</h2>
-                    {product.image && product.image.asset && (
-                      <div className="division-image" style={{ marginBottom: '16px' }}>
-                        <img
-                          src={product.image.asset.url}
-                          alt={product.title}
-                          style={{ maxWidth: '320px', width: '100%', borderRadius: '8px' }}
-                        />
-                      </div>
-                    )}
-                    <p className="division-description" data-cms-field="description">{product.description}</p>
-                    {product.segmentLink && (
-                      <div style={{ marginTop: '12px' }}>
-                        <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
+              <motion.div
+                key={product.slug}
+                id={product.slug}
+                className="product-card"
+                data-cms-item
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="product-image-container">
+                  {product.image && product.image.asset && (
+                    <img
+                      src={product.image.asset.url}
+                      alt={product.title}
+                      className="product-image"
+                    />
+                  )}
+                </div>
+                <div className="product-info">
+                  <h2 className="product-title" data-cms-field="title">{product.title}</h2>
+                  <p className="product-description" data-cms-field="description">{product.description}</p>
+                  {product.segmentLink && (
+                    <div style={{ marginTop: '12px' }}>
+                      <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
+// Amazon-like product grid styles
+import './ProductsAmazon.css';
 
       {/* Additional Information (empty for now) */}
     </div>
