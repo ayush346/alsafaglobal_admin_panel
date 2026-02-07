@@ -17,7 +17,7 @@ export default {
     {
       name: 'productGroups',
       title: 'Product Groups',
-      description: 'Each group is a big heading with multiple products and a View Services button.',
+      description: 'Each group is a big heading with multiple products.',
       type: 'array',
       of: [
         {
@@ -37,19 +37,11 @@ export default {
                   type: 'object',
                   fields: [
                     { name: 'name', title: 'Product Name', type: 'string' },
-                    { name: 'image', title: 'Product Image', type: 'image', options: { hotspot: true }, description: 'Upload an image for this product.' },
+                    { name: 'image', title: 'Product Image', type: 'image', options: { hotspot: true } },
                     { name: 'description', title: 'Product Description', type: 'text' },
                   ],
                 },
               ],
-              description: 'Add products to this group.'
-            },
-            {
-              name: 'segmentRef',
-              title: 'Link to Segment',
-              type: 'reference',
-              to: [{ type: 'segment' }],
-              description: 'The "View Services" button for this group will link to this segment.'
             },
           ],
         },
