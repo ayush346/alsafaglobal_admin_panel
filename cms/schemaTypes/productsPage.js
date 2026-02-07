@@ -1,3 +1,5 @@
+import { SegmentSelector } from '../components/SegmentSelector'
+
 export default {
   name: 'productsPage',
   title: 'Products Page',
@@ -45,9 +47,10 @@ export default {
             },
             {
               name: 'segmentSlug',
-              title: 'Link to Segment (slug)',
+              title: 'Link to Segment',
               type: 'string',
-              description: 'Enter the slug of the segment to link "View Services" to (e.g. office-construction, oil-gas, defence-sector). Must match a slug from the Segments Page.',
+              description: 'Select the segment this group\'s "View Services" button links to.',
+              components: { input: SegmentSelector },
             },
           ],
         },
