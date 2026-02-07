@@ -10,6 +10,24 @@ import BrandText from '../components/BrandText';
 import { urlFor } from '../sanityClient';
 
 const Products = () => {
+    // Group products by segmentSlug
+    const groupedProducts = productsFromCMS?.reduce((acc, prod) => {
+      let segmentSlug = '';
+      let segmentTitle = '';
+      if (prod?.segmentRef?.slug) {
+        segmentSlug = prod.segmentRef.slug;
+        segmentTitle = prod.segmentRef.title || '';
+      } else if (prod?.segmentLink) {
+        segmentSlug = slugify(prod.segmentLink);
+        segmentTitle = prod.segmentLink;
+      }
+      if (!segmentSlug) return acc;
+      if (!acc[segmentSlug]) {
+        acc[segmentSlug] = { segmentTitle, products: [] };
+      }
+      acc[segmentSlug].products.push(prod);
+      return acc;
+    }, {}) || {};
   const location = useLocation();
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
