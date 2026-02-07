@@ -26,7 +26,6 @@ const Products = () => {
 
   // Render productGroups from CMS
   const productGroups = productsData?.productGroups || [];
-export default Products;
 
   return (
     <div className="divisions-page">
@@ -104,3 +103,5 @@ export default Products;
     </div>
   );
 }
+
+export default Products;
