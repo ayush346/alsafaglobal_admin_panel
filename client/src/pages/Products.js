@@ -1,10 +1,25 @@
-import useContent from "../hooks/useContent";
-import { productsPageQuery } from "../queries/productsPageQuery";
-import BrandText from "../components/BrandText";
+import React, { useEffect, useState } from 'react';
+import { client } from '../sanityClient';
+import { productsPageQuery } from '../queries/productsPageQuery';
+import { homePageQuery } from '../queries/homePageQuery';
+import { highlightBrand } from '../components/BrandText';
 
 const Products = () => {
-  const { data: productsData, loading, error } = useContent(productsPageQuery);
-  // Debug output for troubleshooting
+  const [productsData, setProductsData] = useState(null);
+  const [homeData, setHomeData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    client.fetch(productsPageQuery)
+      .then(data => { setProductsData(data); setLoading(false); })
+      .catch(err => { setError(err); setLoading(false); });
+  }, []);
+
+  useEffect(() => {
+    client.fetch(homePageQuery).then(setHomeData);
+  }, []);
+
   if (loading) return <div style={{padding:'2rem',textAlign:'center'}}>Loading products...</div>;
   if (error) return <div style={{padding:'2rem',color:'red',textAlign:'center'}}>Error loading products.</div>;
   if (!productsData) {
@@ -13,10 +28,7 @@ const Products = () => {
 
   return (
     <div style={{maxWidth:'900px',margin:'0 auto',padding:'2rem'}}>
-      {/* Debug output removed for production */}
-      <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}}>
-        <BrandText brandText={productsData.title || 'Products'} />
-      </h1>
+      <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}} dangerouslySetInnerHTML={{ __html: highlightBrand(productsData.title || 'Products', homeData?.brandText || 'Al Safa Global', homeData?.brandColor) }} />
       {productsData.intro && Array.isArray(productsData.intro) && productsData.intro.map((block, i) => (
         <p key={i}>{block.children?.[0]?.text || ''}</p>
       ))}
