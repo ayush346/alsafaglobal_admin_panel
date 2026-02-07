@@ -7,6 +7,7 @@ import useContent from '../hooks/useContent';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import BrandText from '../components/BrandText';
+import { urlFor } from '../sanityClient';
 
 const Products = () => {
   const location = useLocation();
@@ -72,7 +73,8 @@ const Products = () => {
         slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
         title: p?.title || '',
         description: p?.description || '',
-        segmentLink: segmentLink
+        segmentLink: segmentLink,
+        image: p?.image || null
       };
     });
 
@@ -123,21 +125,29 @@ const Products = () => {
                   id={product.slug}
                   className="division-section"
                   data-cms-item
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <div className="division-header">
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="division-header">
+                    {product.image && (
+                      <img
+                        src={urlFor(product.image).width(400).height(250).fit('max').url()}
+                        alt={product.title}
+                        className="division-image"
+                        style={{ marginBottom: 16, maxWidth: 400, width: '100%', borderRadius: 8 }}
+                      />
+                    )}
                     <h2 data-cms-field="title">{product.title}</h2>
-                            <p className="division-description" data-cms-field="description">{product.description}</p>
-                            {product.segmentLink && (
-                              <div style={{ marginTop: '12px' }}>
-                                <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
-                              </div>
-                            )}
-              </div>
-            </motion.div>
+                    <p className="division-description" data-cms-field="description">{product.description}</p>
+                    {product.segmentLink && (
+                      <div style={{ marginTop: '12px' }}>
+                        <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
             ))}
           </div>
         </div>
