@@ -56,7 +56,7 @@ const Products = () => {
   return (
     <div className="divisions-page">
       {/* Hero Section */}
-      <section className="divisions-hero">
+        {/* Hero Section */}
         <div className="container">
           <motion.div 
             className="divisions-hero-content"
@@ -93,7 +93,20 @@ const Products = () => {
         <div className="container">
           <div data-cms-list="products">
             {productsToRender.map((product, index) => (
-                <motion.div
+              if (loading) return <div style={{padding:'2rem',textAlign:'center'}}>Loading products...</div>;
+              if (error) return <div style={{padding:'2rem',color:'red',textAlign:'center'}}>Error loading products.</div>;
+              // Debug output for troubleshooting
+              if (!productsData || !Array.isArray(productsData.productGroups) || productsData.productGroups.length === 0) {
+                return <div style={{padding:'2rem',textAlign:'center'}}>
+                  <div>No product groups found. Please check your CMS content.</div>
+                  <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto',marginTop:'2rem'}}>data: {JSON.stringify(productsData, null, 2)}</pre>
+                </div>;
+              }
+
+              return (
+                <div style={{maxWidth:'900px',margin:'0 auto',padding:'2rem'}}>
+                  <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto',marginBottom:'2rem'}}>data: {JSON.stringify(productsData, null, 2)}</pre>
+                  {productsToRender.map((product, index) => (
                   key={product.slug}
                   id={product.slug}
                   className="division-section"
