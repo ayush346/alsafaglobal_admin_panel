@@ -19,6 +19,3 @@ export const productsPageQuery = `
   }
 }
 `;
-
-// Temporary: fetch the entire raw document to debug field names
-export const productsPageRawQuery = `*[_type == "productsPage"][0]`;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { client } from '../sanityClient';
-import { productsPageQuery, productsPageRawQuery } from '../queries/productsPageQuery';
+import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import './Products.css';
@@ -9,11 +9,8 @@ import './Products.css';
 const Products = () => {
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
-  const [rawData, setRawData] = useState(null);
-
   useEffect(() => {
     client.fetch(productsPageQuery).then(setProductsData);
-    client.fetch(productsPageRawQuery).then(setRawData);
   }, []);
 
   useEffect(() => {
@@ -43,8 +40,6 @@ const Products = () => {
             {productsData?.intro?.length > 0 && productsData.intro.map((block, i) => (
               <p key={i}>{block.children?.[0]?.text || ''}</p>
             ))}
-            {/* Temporary debug: shows ALL raw fields from the Sanity document */}
-            <pre style={{background:'#111',color:'#0f0',padding:'12px',fontSize:'11px',overflow:'auto',maxHeight:'400px',marginTop:'2rem',textAlign:'left',borderRadius:'8px'}}>RAW DOCUMENT FIELDS: {JSON.stringify(rawData, null, 2)}</pre>
           </motion.div>
         </div>
       </section>
