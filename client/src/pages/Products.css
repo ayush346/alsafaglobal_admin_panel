@@ -1,0 +1,144 @@
+.products-page {
+  min-height: 100vh;
+}
+
+.products-hero {
+  background: var(--white);
+  color: var(--text-primary);
+  padding: 6rem 0 2rem;
+  text-align: center;
+}
+
+.products-hero-content h1 {
+  color: var(--text-primary);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 800;
+}
+
+.products-hero-content h1 .gold-text {
+  color: var(--primary-gold) !important;
+}
+
+.products-hero-content p {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.products-groups {
+  padding: 2rem 0 4rem;
+}
+
+.products-groups .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.product-group-card {
+  margin: 2.5rem 0;
+  padding: 2rem;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.product-group-card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.view-services-btn {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  background: var(--primary-gold, #f59e0b);
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.view-services-btn:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.product-card {
+  flex: 1 1 250px;
+  min-width: 250px;
+  background: var(--white-gray, #f8f9fa);
+  border: 1px solid rgba(30, 58, 138, 0.08);
+  border-radius: 10px;
+  padding: 1.2rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.product-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.product-card img {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.product-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #555);
+  line-height: 1.5;
+}
+
+.no-products {
+  color: var(--text-secondary, #888);
+  font-style: italic;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .products-hero {
+    padding: 5rem 1rem 1.5rem;
+  }
+
+  .products-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .product-group-card {
+    padding: 1.2rem;
+  }
+
+  .products-grid {
+    gap: 1rem;
+  }
+
+  .product-card {
+    min-width: 100%;
+  }
+}

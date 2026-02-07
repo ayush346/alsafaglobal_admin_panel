@@ -1,78 +1,87 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
+import './Products.css';
 
 const Products = () => {
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    client.fetch(productsPageQuery)
-      .then(data => { setProductsData(data); setLoading(false); })
-      .catch(err => { setError(err); setLoading(false); });
+    client.fetch(productsPageQuery).then(setProductsData);
   }, []);
 
   useEffect(() => {
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
 
-  if (loading) return <div style={{padding:'2rem',textAlign:'center'}}>Loading products...</div>;
-  if (error) return <div style={{padding:'2rem',color:'red',textAlign:'center'}}>Error loading products.</div>;
-  if (!productsData) {
-    return <div style={{padding:'2rem',textAlign:'center'}}>Loading...</div>;
-  }
-
   return (
-    <div style={{maxWidth:'900px',margin:'0 auto',padding:'2rem'}}>
-      <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}} dangerouslySetInnerHTML={{ __html: highlightBrand(productsData.title || 'Products', homeData?.brandText || 'Al Safa Global', homeData?.brandColor) }} />
-      {productsData.intro && Array.isArray(productsData.intro) && productsData.intro.map((block, i) => (
-        <p key={i}>{block.children?.[0]?.text || ''}</p>
-      ))}
-      {Array.isArray(productsData.productGroups) && productsData.productGroups.length > 0 ? (
-        productsData.productGroups.map((group, i) => (
-          <div key={i} style={{margin:'2.5rem 0',padding:'1.5rem',border:'1px solid #eee',borderRadius:'8px',background:'#fafbfc'}}>
-            <h2 style={{fontSize:'1.4rem',marginBottom:'1rem'}}>{group.title}</h2>
-            {group.segmentRef && group.segmentRef.slug && (
-              <a
-                href={`/segments/${group.segmentRef.slug}`}
-                style={{
-                  display: 'inline-block',
-                  marginBottom: '1rem',
-                  padding: '0.5rem 1.2rem',
-                  background: '#007bff',
-                  color: '#fff',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 500
-                }}
-              >
-                View Services
-              </a>
-            )}
-            {group.products && group.products.length > 0 ? (
-              <div style={{display:'flex',flexWrap:'wrap',gap:'2rem'}}>
-                {group.products.map((product, j) => (
-                  <div key={j} style={{flex:'1 1 220px',minWidth:'220px',background:'#fff',border:'1px solid #eee',borderRadius:'6px',padding:'1rem'}}>
-                    <h3 style={{fontSize:'1.1rem',marginBottom:'0.5rem'}}>{product.name}</h3>
-                    {product.image?.asset?.url && (
-                      <img src={product.image.asset.url} alt={product.name} style={{width:'100%',maxWidth:'180px',borderRadius:'6px',marginBottom:'0.5rem'}} />
-                    )}
-                    <p style={{fontSize:'0.97rem',color:'#444'}}>{product.description}</p>
+    <div className="products-page">
+      {/* Hero Section */}
+      <section className="products-hero">
+        <div className="container">
+          <motion.div
+            className="products-hero-content"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1
+              dangerouslySetInnerHTML={{
+                __html: highlightBrand(
+                  productsData?.title || 'Products',
+                  homeData?.brandText || 'Al Safa Global',
+                  homeData?.brandColor
+                )
+              }}
+            />
+            {productsData?.intro?.length > 0 && productsData.intro.map((block, i) => (
+              <p key={i}>{block.children?.[0]?.text || ''}</p>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Product Groups Section */}
+      <section className="products-groups">
+        <div className="container">
+          {Array.isArray(productsData?.productGroups) && productsData.productGroups.length > 0 ? (
+            productsData.productGroups.map((group, i) => (
+              <div key={i} className="product-group-card">
+                <h2>{group.title}</h2>
+                {group.segmentRef && group.segmentRef.slug && (
+                  <a
+                    href={`/divisions#${group.segmentRef.slug}`}
+                    className="view-services-btn"
+                  >
+                    View Services
+                  </a>
+                )}
+                {group.products && group.products.length > 0 ? (
+                  <div className="products-grid">
+                    {group.products.map((product, j) => (
+                      <div key={j} className="product-card">
+                        <h3>{product.name}</h3>
+                        {product.image?.asset?.url && (
+                          <img src={product.image.asset.url} alt={product.name} />
+                        )}
+                        {product.description && <p>{product.description}</p>}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="no-products">No products in this group.</div>
+                )}
               </div>
-            ) : (
-              <div style={{color:'#888',fontStyle:'italic'}}>No products in this group.</div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div style={{color:'#888',fontStyle:'italic',marginTop:'2rem'}}>No product groups found. Please check your CMS content.</div>
-      )}
+            ))
+          ) : (
+            <div className="no-products">No product groups available yet.</div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };
