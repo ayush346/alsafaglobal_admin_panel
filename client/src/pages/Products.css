@@ -74,44 +74,79 @@
 }
 
 .products-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
 }
 
 .product-card {
-  flex: 1 1 250px;
-  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: var(--white-gray, #f8f9fa);
   border: 1px solid rgba(30, 58, 138, 0.08);
-  border-radius: 10px;
-  padding: 1.2rem;
+  border-radius: 12px;
+  overflow: hidden;
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .product-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.10);
+  transform: translateY(-3px);
 }
 
-.product-card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.product-card img {
+.product-image-wrapper {
   width: 100%;
-  max-width: 200px;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f0f0f0;
 }
 
-.product-card p {
-  font-size: 0.95rem;
+.product-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-image-wrapper img {
+  transform: scale(1.04);
+}
+
+.product-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 1rem 1.2rem 0.4rem;
+}
+
+.product-description {
+  font-size: 0.93rem;
   color: var(--text-secondary, #555);
-  line-height: 1.5;
+  text-align: center;
+  line-height: 1.55;
+  margin: 0 1.2rem 1.2rem;
+}
+
+.toggle-products-btn {
+  display: inline-block;
+  margin: 1.2rem 0 0.5rem;
+  padding: 0.55rem 1.6rem;
+  background: transparent;
+  color: var(--primary-gold, #f59e0b);
+  border: 2px solid var(--primary-gold, #f59e0b);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.toggle-products-btn:hover {
+  background: var(--primary-gold, #f59e0b);
+  color: #fff;
 }
 
 .no-products {
@@ -135,10 +170,7 @@
   }
 
   .products-grid {
-    gap: 1rem;
-  }
-
-  .product-card {
-    min-width: 100%;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
   }
 }

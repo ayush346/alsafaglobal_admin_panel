@@ -7,6 +7,57 @@ import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import './Products.css';
 
+const INITIAL_SHOW = 2;
+
+const ProductGroup = ({ group }) => {
+  const [expanded, setExpanded] = useState(false);
+  const products = group.products || [];
+  const hasMore = products.length > INITIAL_SHOW;
+  const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
+
+  return (
+    <div className="product-group-card">
+      <h2>{group.title}</h2>
+      <div className="products-grid">
+        {visible.map((product, j) => (
+          <motion.div
+            key={j}
+            className="product-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: j * 0.1 }}
+            viewport={{ once: true }}
+          >
+            {product.image?.asset?.url && (
+              <div className="product-image-wrapper">
+                <img src={product.image.asset.url} alt={product.name} />
+              </div>
+            )}
+            <h3 className="product-name">{product.name}</h3>
+            {product.description && <p className="product-description">{product.description}</p>}
+          </motion.div>
+        ))}
+      </div>
+      {hasMore && (
+        <button
+          className="toggle-products-btn"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? 'View Less' : `View More (${products.length - INITIAL_SHOW} more)`}
+        </button>
+      )}
+      {group.segmentSlug && (
+        <Link
+          to={`/divisions#${group.segmentSlug}`}
+          className="view-services-btn"
+        >
+          View Services
+        </Link>
+      )}
+    </div>
+  );
+};
+
 const Products = () => {
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
@@ -48,30 +99,7 @@ const Products = () => {
         <div className="container">
           {Array.isArray(productsData?.productGroups) && productsData.productGroups.length > 0 ? (
             productsData.productGroups.map((group, i) => (
-              <div key={i} className="product-group-card">
-                <h2>{group.title}</h2>
-                {group.products && group.products.length > 0 && (
-                  <div className="products-grid">
-                    {group.products.map((product, j) => (
-                      <div key={j} className="product-card">
-                        <h3>{product.name}</h3>
-                        {product.image?.asset?.url && (
-                          <img src={product.image.asset.url} alt={product.name} />
-                        )}
-                        {product.description && <p>{product.description}</p>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {group.segmentSlug && (
-                  <Link
-                    to={`/divisions#${group.segmentSlug}`}
-                    className="view-services-btn"
-                  >
-                    View Services
-                  </Link>
-                )}
-              </div>
+              <ProductGroup key={i} group={group} />
             ))
           ) : (
             <div className="no-products">No product groups available yet.</div>

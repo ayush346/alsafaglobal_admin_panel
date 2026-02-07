@@ -26,13 +26,13 @@ const Header = () => {
   const { data: productsCms } = useContent(productsPageQuery);
 
   useEffect(() => {
-    // Fetch segments for Segments dropdown (unchanged behavior)
+    // Fetch segments for Segments dropdown
     client.fetch(segmentsPageQuery).then((data) => {
       const list = (data?.segments || [])
         .filter((s) => s?.enabled !== false)
         .map((s) => ({
-          title: s?.segmentRef?.title || '',
-          slug: s?.segmentRef?.slug ? String(s.segmentRef.slug).trim() || slugify(s?.segmentRef?.title) : slugify(s?.segmentRef?.title)
+          title: s?.title || '',
+          slug: s?.slug ? String(s.slug).trim() || slugify(s?.title) : slugify(s?.title)
         }))
         .filter((s) => s.title && s.slug);
       setSegments(list);
@@ -40,12 +40,12 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Populate products from CMS via useContent
-    const list = (productsCms?.products || [])
-      .filter((p) => p?.enabled !== false)
+    // Populate products from CMS (productGroups titles)
+    const list = (productsCms?.productGroups || [])
+      .filter((p) => p?.title)
       .map((p) => ({
         title: p?.title || '',
-        slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title)
+        slug: slugify(p?.title)
       }))
       .filter((p) => p.title && p.slug);
     setProducts(list);
