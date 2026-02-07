@@ -80,6 +80,10 @@ const Products = () => {
 
   const productsToRender = (productsFromCMS && productsFromCMS.length) ? productsFromCMS : [];
 
+  // Show only 2 products by default, expand on button click
+  const [showAll, setShowAll] = useState(false);
+  const visibleProducts = showAll ? productsToRender : productsToRender.slice(0, 2);
+
   return (
     <div className="divisions-page">
       {/* Hero Section */}
@@ -115,41 +119,16 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Products Content */}
+      {/* Products grouped by segment */}
       <section className="divisions-content">
         <div className="container">
-          <div data-cms-list="products">
-            {productsToRender.map((product, index) => (
-                <motion.div
-                  key={product.slug}
-                  id={product.slug}
-                  className="division-section"
-                  data-cms-item
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="division-header">
-                    {product.image && (
-                      <img
-                        src={urlFor(product.image).width(400).height(250).fit('max').url()}
-                        alt={product.title}
-                        className="division-image"
-                        style={{ marginBottom: 16, maxWidth: 400, width: '100%', borderRadius: 8 }}
-                      />
-                    )}
-                    <h2 data-cms-field="title">{product.title}</h2>
-                    <p className="division-description" data-cms-field="description">{product.description}</p>
-                    {product.segmentLink && (
-                      <div style={{ marginTop: '12px' }}>
-                        <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-            ))}
-          </div>
+          {Object.entries(groupedProducts).map(([segmentSlug, { segmentTitle, products }]) => (
+            <SegmentProductsDivision
+              key={segmentSlug}
+              segmentTitle={segmentTitle || segmentSlug}
+              products={products}
+            />
+          ))}
         </div>
       </section>
 
@@ -159,3 +138,58 @@ const Products = () => {
 };
 
 export default Products;
+
+// Helper component for per-segment division with local show more state
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { urlFor } from '../sanityClient';
+
+function SegmentProductsDivision({ segmentTitle, products }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleProducts = showAll ? products : products.slice(0, 2);
+  return (
+    <div className="division-group">
+      <h2 style={{ marginBottom: 16 }}>{segmentTitle}</h2>
+      <div data-cms-list="products">
+        {visibleProducts.map((product, index) => (
+          <motion.div
+            key={product.slug}
+            id={product.slug}
+            className="division-section"
+            data-cms-item
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            viewport={{ once: true }}
+          >
+            <div className="division-header">
+              {product.image && (
+                <img
+                  src={urlFor(product.image).width(400).height(250).fit('max').url()}
+                  alt={product.title}
+                  className="division-image"
+                  style={{ marginBottom: 16, maxWidth: 400, width: '100%', borderRadius: 8 }}
+                />
+              )}
+              <h3 data-cms-field="title">{product.title}</h3>
+              <p className="division-description" data-cms-field="description">{product.description}</p>
+              {product.segmentLink && (
+                <div style={{ marginTop: '12px' }}>
+                  <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ))}
+        {!showAll && products.length > 2 && (
+          <div style={{ textAlign: 'center', marginTop: 24 }}>
+            <button className="btn btn-primary" onClick={() => setShowAll(true)}>
+              View More Products
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
