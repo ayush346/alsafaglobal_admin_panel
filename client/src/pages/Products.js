@@ -140,9 +140,8 @@ const Products = () => {
 export default Products;
 
 // Helper component for per-segment division with local show more state
-
 function SegmentProductsDivision({ segmentTitle, products }) {
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = React.useState(false);
   const visibleProducts = showAll ? products : products.slice(0, 2);
   return (
     <div className="division-group">
