@@ -9,13 +9,12 @@ const Products = () => {
   if (!productsData || !Array.isArray(productsData.productGroups) || productsData.productGroups.length === 0) {
     return <div style={{padding:'2rem',textAlign:'center'}}>
       <div>No product groups found. Please check your CMS content.</div>
-      <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto',marginTop:'2rem'}}>data: {JSON.stringify(productsData, null, 2)}</pre>
     </div>;
   }
 
   return (
     <div style={{maxWidth:'900px',margin:'0 auto',padding:'2rem'}}>
-      <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto',marginBottom:'2rem'}}>data: {JSON.stringify(productsData, null, 2)}</pre>
+      {/* Debug output removed for production */}
       <h1 style={{fontSize:'2.2rem',marginBottom:'1.5rem'}}>{productsData.title || 'Products'}</h1>
       {productsData.intro && Array.isArray(productsData.intro) && productsData.intro.map((block, i) => (
         <p key={i}>{block.children?.[0]?.text || ''}</p>
