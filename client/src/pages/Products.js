@@ -27,8 +27,19 @@ const Products = () => {
   // Render productGroups from CMS
   const productGroups = productsData?.productGroups || [];
 
+  // Debug: Log and display fetched data
+  console.log('productsData:', productsData);
+  console.log('productGroups:', productGroups);
+
   return (
     <div className="divisions-page">
+      {/* Debug Output - Remove in production */}
+      <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto'}}>
+        productsData: {JSON.stringify(productsData, null, 2)}
+      </pre>
+      <pre style={{background:'#eee',color:'#222',padding:'12px',fontSize:'12px',overflow:'auto'}}>
+        productGroups: {JSON.stringify(productGroups, null, 2)}
+      </pre>
       {/* Hero Section */}
       <section className="divisions-hero">
         <div className="container">
