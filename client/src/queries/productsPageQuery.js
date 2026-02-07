@@ -5,21 +5,21 @@ export const productsPageQuery = `
     title,
     intro,
 
-    productGroups[]{
+    products[]{
+      enabled,
       title,
-      products[]{
-        name,
-        description,
-        image{asset->{url}}
+      slug,
+      description,
+      image{
+        asset->{url}
       },
+      segmentLink,
       segmentRef->{
         slug,
         title
       }
     }
 
-    title,
-    intro
   }
 
 `
