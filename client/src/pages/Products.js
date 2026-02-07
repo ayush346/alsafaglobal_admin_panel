@@ -11,47 +11,8 @@ import BrandText from '../components/BrandText';
 const Products = () => {
   const location = useLocation();
   const [productsData, setProductsData] = useState(null);
-  const [homeData, setHomeData] = useState(null);
-
-  const { data: productsCms } = useContent(productsPageQuery);
-  const { data: homeCms } = useContent(homePageQuery);
-
-  useEffect(() => {
-    setProductsData(productsCms);
-  }, [productsCms]);
-
-  useEffect(() => {
-    setHomeData(homeCms);
-  }, [homeCms]);
-
-  const slugify = (s) =>
-    (s || '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '') || 'product';
-
-  const productsFromCMS = productsData?.products
-    ?.filter(p => p?.enabled !== false)
-    ?.map((p) => {
-      let segmentLink = '';
-      if (p?.segmentRef?.slug) {
-        segmentLink = `/divisions#${p.segmentRef.slug}`;
-      } else if (p?.segmentLink) {
-        segmentLink = p.segmentLink;
-        if (!segmentLink.startsWith('/')) {
-          segmentLink = `/divisions#${slugify(segmentLink)}`;
-        }
-      }
-      return {
-        slug: p?.slug ? String(p.slug).trim() || slugify(p?.title) : slugify(p?.title),
-        title: p?.title || '',
-        description: p?.description || '',
-        segmentLink: segmentLink,
-        image: p?.image || null
-      };
-    });
-
-  const productsToRender = (productsFromCMS && productsFromCMS.length) ? productsFromCMS : [];
+  // Render productGroups from CMS
+  const productGroups = productsData?.productGroups || [];
 
   return (
     <div className="divisions-page">
@@ -91,45 +52,51 @@ const Products = () => {
       {/* Products Content */}
       <section className="divisions-content">
         <div className="container">
-          <div data-cms-list="products">
-            {productsToRender.map((product, index) => (
-                <motion.div
-                  key={product.slug}
-                  id={product.slug}
-                  className="division-section"
-                  data-cms-item
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="division-header">
-                    <h2 data-cms-field="title">{product.title}</h2>
-                    {product.image && product.image.asset && (
-                      <div className="division-image" style={{ marginBottom: '16px' }}>
-                        <img
-                          src={product.image.asset.url}
-                          alt={product.title}
-                          style={{ maxWidth: '320px', width: '100%', borderRadius: '8px' }}
-                        />
+          {productGroups.map((group, groupIdx) => (
+            <div className="division-section" key={groupIdx} style={{ marginBottom: '40px' }}>
+              <div className="container">
+                {productGroups.map((group, groupIdx) => {
+                  return (
+                    <div className="division-section" key={groupIdx} style={{ marginBottom: '40px' }}>
+                      <div className="division-header">
+                        <h2>{group.title}</h2>
                       </div>
-                    )}
-                    <p className="division-description" data-cms-field="description">{product.description}</p>
-                    {product.segmentLink && (
-                      <div style={{ marginTop: '12px' }}>
-                        <Link to={product.segmentLink} className="btn btn-secondary">View Services</Link>
+                      <div className="products-group-list">
+                        {group.products && group.products.length > 0 && group.products.map((product, idx) => {
+                          return (
+                            <div className="product-item" key={idx} style={{ marginBottom: '24px' }}>
+                              <h3>{product.name}</h3>
+                              {product.image && product.image.asset && (
+                                <div className="division-image" style={{ marginBottom: '12px' }}>
+                                  <img
+                                    src={product.image.asset.url}
+                                    alt={product.name}
+                                    style={{ maxWidth: '220px', width: '100%', borderRadius: '8px' }}
+                                  />
+                                </div>
+                              )}
+                              <p>{product.description}</p>
+                            </div>
+                          );
+                        })}
                       </div>
-                    )}
-                  </div>
-                </motion.div>
-            ))}
-          </div>
+                      {group.segmentRef && group.segmentRef.slug && (
+                        <div style={{ marginTop: '16px' }}>
+                          <Link to={`/divisions#${group.segmentRef.slug}`} className="btn btn-secondary">
+                            View Services
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Additional Information (empty for now) */}
     </div>
   );
-};
-
-export default Products;
+}
