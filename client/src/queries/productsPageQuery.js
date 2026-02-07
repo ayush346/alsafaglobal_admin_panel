@@ -10,6 +10,7 @@ export const productsPageQuery = `
       title,
       slug,
       description,
+      image,
       segmentLink,
       segmentRef->{
         slug,
