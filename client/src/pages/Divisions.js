@@ -22,13 +22,15 @@ const Divisions = () => {
     let attemptCount = 0;
     const maxAttempts = 10; // Retry up to 10 times over ~1 second
     
+    const HEADER_OFFSET = 100;
     const attemptScroll = () => {
       const el = document.getElementById(hash);
       
       if (el) {
-        // Element found, scroll immediately
+        // Element found, scroll with offset for fixed header
         requestAnimationFrame(() => {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const top = el.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+          window.scrollTo({ top, behavior: 'smooth' });
         });
         return; // Stop retrying
       }

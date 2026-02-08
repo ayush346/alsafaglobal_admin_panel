@@ -14,10 +14,12 @@ export default function useHashScroll() {
     const hash = location.hash?.replace('#', '');
     if (!hash) return;
 
+    const HEADER_OFFSET = 100;
     const scrollToElement = () => {
       const el = document.getElementById(hash);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const top = el.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+        window.scrollTo({ top, behavior: 'smooth' });
       }
     };
 

@@ -47,6 +47,7 @@
   border-radius: 12px;
   background: var(--white);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  scroll-margin-top: 100px;
 }
 
 .product-group-card h2 {

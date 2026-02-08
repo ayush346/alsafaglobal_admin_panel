@@ -78,10 +78,14 @@ const Products = () => {
     const hash = location.hash?.replace('#', '');
     if (!hash || !productsData?.productGroups) return;
     let attempts = 0;
+    const HEADER_OFFSET = 100;
     const tryScroll = () => {
       const el = document.getElementById(hash);
       if (el) {
-        requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        requestAnimationFrame(() => {
+          const top = el.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+          window.scrollTo({ top, behavior: 'smooth' });
+        });
         return;
       }
       if (++attempts < 10) setTimeout(tryScroll, 100);
