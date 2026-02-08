@@ -27,6 +27,7 @@
   max-width: 700px;
   margin: 0 auto;
   line-height: 1.7;
+  text-align: center;
 }
 
 .products-groups {
@@ -53,6 +54,7 @@
   margin-bottom: 1rem;
   color: var(--text-primary);
   font-weight: 700;
+  text-align: center;
 }
 
 /* view-services-btn styles moved below toggle-products-btn */
