@@ -185,7 +185,11 @@
 
 @media (max-width: 768px) {
   .products-hero {
-    padding: 5rem 1rem 1.5rem;
+    padding: 5rem 1rem 0.2rem;
+  }
+
+  .products-groups {
+    padding-top: 1.5rem;
   }
 
   .products-hero-content h1 {
