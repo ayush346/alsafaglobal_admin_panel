@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import './Divisions.css';
 import { client } from '../sanityClient';
 import { segmentsPageQuery } from '../queries/segmentsPageQuery';
+import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
-import BrandText from '../components/BrandText';
 
 const Divisions = () => {
   const location = useLocation();
   const [segmentsData, setSegmentsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
+  const [productsData, setProductsData] = useState(null);
 
   // DOM-safe hash scrolling: waits for segments to render, retries if element not found
   useEffect(() => {
@@ -47,7 +48,16 @@ const Divisions = () => {
   useEffect(() => {
     client.fetch(segmentsPageQuery).then(setSegmentsData);
     client.fetch(homePageQuery).then(setHomeData);
+    client.fetch(productsPageQuery).then(setProductsData);
   }, []);
+
+  // Build reverse map: segmentSlug -> segmentSlug (used as product group id)
+  const segmentToProductGroup = {};
+  if (productsData?.productGroups) {
+    productsData.productGroups.forEach(g => {
+      if (g.segmentSlug) segmentToProductGroup[g.segmentSlug] = g.segmentSlug;
+    });
+  }
 
   const slugify = (s) =>
     (s || '')
@@ -238,6 +248,16 @@ const Divisions = () => {
                   ))}
                 </ul>
               </div>
+              {segmentToProductGroup[division.slug] && (
+                <div className="division-actions">
+                  <Link
+                    to={`/products#${segmentToProductGroup[division.slug]}`}
+                    className="view-products-btn"
+                  >
+                    View Products
+                  </Link>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

@@ -157,6 +157,35 @@
   top: 1rem;
 }
 
+.division-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.view-products-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.8rem;
+  background: var(--gradient-primary, linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%));
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: all 0.3s ease;
+}
+
+.view-products-btn:hover {
+  background: var(--primary-gold, #f59e0b);
+  color: var(--text-dark, #0f172a);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
 /* Additional Information Section */
 .divisions-info {
   padding: 4rem 0;

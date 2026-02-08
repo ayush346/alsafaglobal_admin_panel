@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
@@ -15,8 +15,11 @@ const ProductGroup = ({ group }) => {
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
 
+  const slugify = (s) =>
+    (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
+
   return (
-    <div className="product-group-card">
+    <div className="product-group-card" id={group.segmentSlug || slugify(group.title)}>
       <h2>{group.title}</h2>
       <div className="products-grid">
         {visible.map((product, j) => (
@@ -61,6 +64,7 @@ const ProductGroup = ({ group }) => {
 };
 
 const Products = () => {
+  const location = useLocation();
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
 
@@ -68,6 +72,22 @@ const Products = () => {
     client.fetch(productsPageQuery).then(setProductsData);
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
+
+  // Hash scroll logic
+  useEffect(() => {
+    const hash = location.hash?.replace('#', '');
+    if (!hash || !productsData?.productGroups) return;
+    let attempts = 0;
+    const tryScroll = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        return;
+      }
+      if (++attempts < 10) setTimeout(tryScroll, 100);
+    };
+    setTimeout(tryScroll, 150);
+  }, [location.hash, productsData]);
 
   return (
     <div className="products-page">
