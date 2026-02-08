@@ -21,6 +21,8 @@ const Header = () => {
   const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
   const [segments, setSegments] = useState([]);
   const [products, setProducts] = useState([]);
+  const [mobileSegmentsOpen, setMobileSegmentsOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const location = useLocation();
 
   const { data: productsCms } = useContent(productsPageQuery);
@@ -64,6 +66,8 @@ const Header = () => {
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
+    setMobileSegmentsOpen(false);
+    setMobileProductsOpen(false);
   }, [location]);
 
   const navItems = [
@@ -165,13 +169,24 @@ const Header = () => {
                 >
                   {item.isDropdown ? (
                     <>
-                      <Link
-                        to={item.path}
-                        className={`nav-link nav-link-trigger ${isActive(item.path) ? 'active' : ''}`}
-                      >
-                        {item.name}
-                        <FiChevronDown className={`nav-chevron ${(item.name === 'Segments' ? segmentsDropdownOpen : productsDropdownOpen) ? 'open' : ''}`} />
-                      </Link>
+                      <span className={`nav-link nav-link-trigger ${isActive(item.path) ? 'active' : ''}`}>
+                        <Link to={item.path} className="nav-link-text">
+                          {item.name}
+                        </Link>
+                        <span
+                          className="nav-chevron-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (item.name === 'Segments') setSegmentsDropdownOpen(prev => !prev);
+                            if (item.name === 'Products') setProductsDropdownOpen(prev => !prev);
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Toggle ${item.name} dropdown`}
+                        >
+                          <FiChevronDown className={`nav-chevron ${(item.name === 'Segments' ? segmentsDropdownOpen : productsDropdownOpen) ? 'open' : ''}`} />
+                        </span>
+                      </span>
                       {/* Segments dropdown */}
                       {item.name === 'Segments' && segments.length > 0 && (
                         <AnimatePresence>
@@ -309,30 +324,67 @@ const Header = () => {
                     >
                       {item.isDropdown && item.name === 'Segments' && segments.length > 0 ? (
                         <div className="mobile-nav-segments">
-                          <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
-                          <ul className="mobile-nav-sublist">
-                            {segments.map((seg) => (
-                              <li key={seg.slug}>
-                                <Link
-                                  to={`${item.path}#${seg.slug}`}
-                                  className="mobile-nav-sublink"
-                                  onClick={() => setIsOpen(false)}
-                                >
-                                  {seg.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                          <div className="mobile-nav-dropdown-header">
+                            <Link
+                              to={item.path}
+                              className={`mobile-nav-link ${isActive(item.path) ? 'active' : ''}`}
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {item.name}
+                            </Link>
+                            <span
+                              className="mobile-chevron-btn"
+                              onClick={() => setMobileSegmentsOpen(prev => !prev)}
+                              role="button"
+                              tabIndex={0}
+                              aria-label="Toggle Segments submenu"
+                            >
+                              <FiChevronDown className={`nav-chevron ${mobileSegmentsOpen ? 'open' : ''}`} />
+                            </span>
+                          </div>
+                          {mobileSegmentsOpen && (
+                            <ul className="mobile-nav-sublist">
+                              {segments.map((seg) => (
+                                <li key={seg.slug}>
+                                  <Link
+                                    to={`${item.path}#${seg.slug}`}
+                                    className="mobile-nav-sublink"
+                                    onClick={() => setIsOpen(false)}
+                                  >
+                                    {seg.title}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ) : item.isDropdown && item.name === 'Products' && products.length > 0 ? (
                         <div className="mobile-nav-segments">
-                            <span className="mobile-nav-link mobile-nav-segments-label">{item.name}</span>
+                          <div className="mobile-nav-dropdown-header">
+                            <Link
+                              to={item.path}
+                              className={`mobile-nav-link ${isActive(item.path) ? 'active' : ''}`}
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {item.name}
+                            </Link>
+                            <span
+                              className="mobile-chevron-btn"
+                              onClick={() => setMobileProductsOpen(prev => !prev)}
+                              role="button"
+                              tabIndex={0}
+                              aria-label="Toggle Products submenu"
+                            >
+                              <FiChevronDown className={`nav-chevron ${mobileProductsOpen ? 'open' : ''}`} />
+                            </span>
+                          </div>
+                          {mobileProductsOpen && (
                             <ul className="mobile-nav-sublist">
                               <li className="mobile-dropdown-title">List of Products</li>
                               {products.map((prod) => (
-                              <li key={prod.slug}>
-                                <Link
-                                  to={`${item.path}#${prod.slug}`}
+                                <li key={prod.slug}>
+                                  <Link
+                                    to={`${item.path}#${prod.slug}`}
                                     className="mobile-nav-sublink"
                                     onClick={() => setIsOpen(false)}
                                   >
@@ -341,6 +393,7 @@ const Header = () => {
                                 </li>
                               ))}
                             </ul>
+                          )}
                         </div>
                       ) : (
                         <Link
