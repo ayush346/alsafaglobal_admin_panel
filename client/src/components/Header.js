@@ -47,7 +47,7 @@ const Header = () => {
       .filter((p) => p?.title)
       .map((p) => ({
         title: p?.title || '',
-        slug: slugify(p?.title)
+        slug: p?.segmentSlug || slugify(p?.title)
       }))
       .filter((p) => p.title && p.slug);
     setProducts(list);
