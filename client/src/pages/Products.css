@@ -26,8 +26,8 @@
 }
 
 .products-hero-content p {
-  font-size: var(--text-base);
-  color: var(--text-secondary);
+  font-size: 1.1rem;
+  color: var(--text-primary);
   font-weight: 600;
   line-height: 1.6;
   text-align: justify;
