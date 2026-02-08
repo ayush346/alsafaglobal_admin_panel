@@ -5,8 +5,12 @@
 .products-hero {
   background: var(--white);
   color: var(--text-primary);
-  padding: 6rem 0 2rem;
+  padding: 6rem 0 0.2rem;
   text-align: center;
+}
+
+.products-hero-content p:last-child {
+  margin-bottom: 0;
 }
 
 .products-hero-content h1 {
