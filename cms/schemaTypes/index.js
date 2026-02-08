@@ -1,17 +1,15 @@
 import homePage from './homePage'
-import aboutPage from './aboutPage'
 import segmentsPage from './segmentsPage'
-import contactPage from './contactPage'
 import productsPage from './productsPage'
-
-
+import aboutPage from './aboutPage'
+import contactPage from './contactPage'
 
 export const schemaTypes = [
   homePage,
-  aboutPage,
   segmentsPage,
-  contactPage,
   productsPage,
+  aboutPage,
+  contactPage,
 ]
 
   
