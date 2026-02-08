@@ -55,23 +55,7 @@
   font-weight: 700;
 }
 
-.view-services-btn {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  padding: 0.6rem 1.5rem;
-  background: var(--primary-gold, #f59e0b);
-  color: #fff;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.view-services-btn:hover {
-  background: #d97706;
-  transform: translateY(-1px);
-}
+/* view-services-btn styles moved below toggle-products-btn */
 
 .products-grid {
   display: grid;
@@ -130,23 +114,52 @@
   margin: 0 1.2rem 1.2rem;
 }
 
+.product-group-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
 .toggle-products-btn {
-  display: inline-block;
-  margin: 1.2rem 0 0.5rem;
-  padding: 0.55rem 1.6rem;
-  background: transparent;
-  color: var(--primary-gold, #f59e0b);
-  border: 2px solid var(--primary-gold, #f59e0b);
-  border-radius: 6px;
+  background: none;
+  border: none;
+  color: var(--primary-blue, #1e3a8a);
+  font-size: 0.9rem;
   font-weight: 600;
-  font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
 .toggle-products-btn:hover {
-  background: var(--primary-gold, #f59e0b);
+  color: var(--primary-blue-light, #3b82f6);
+  text-decoration: underline;
+}
+
+.view-services-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.8rem;
+  background: var(--gradient-primary, linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%));
   color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: all 0.3s ease;
+}
+
+.view-services-btn:hover {
+  background: var(--primary-gold, #f59e0b);
+  color: var(--text-dark, #0f172a);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .no-products {

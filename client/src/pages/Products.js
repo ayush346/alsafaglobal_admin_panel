@@ -38,22 +38,24 @@ const ProductGroup = ({ group }) => {
           </motion.div>
         ))}
       </div>
-      {hasMore && (
-        <button
-          className="toggle-products-btn"
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? 'View Less' : `View More (${products.length - INITIAL_SHOW} more)`}
-        </button>
-      )}
-      {group.segmentSlug && (
-        <Link
-          to={`/divisions#${group.segmentSlug}`}
-          className="view-services-btn"
-        >
-          View Services
-        </Link>
-      )}
+      <div className="product-group-actions">
+        {hasMore && (
+          <button
+            className="toggle-products-btn"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? 'View Less' : `View More (${products.length - INITIAL_SHOW} more)`}
+          </button>
+        )}
+        {group.segmentSlug && (
+          <Link
+            to={`/divisions#${group.segmentSlug}`}
+            className="view-services-btn"
+          >
+            View Services
+          </Link>
+        )}
+      </div>
     </div>
   );
 };
