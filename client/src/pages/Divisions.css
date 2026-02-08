@@ -97,6 +97,26 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.division-image-wrapper {
+  max-width: 500px;
+  margin: 0 auto 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.division-image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.division-image-wrapper:hover img {
+  transform: scale(1.03);
+}
+
 .division-description {
   color: var(--text-secondary);
   font-size: 1.1rem;

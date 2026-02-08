@@ -148,6 +148,7 @@ const Divisions = () => {
         slug: seg?.slug ? String(seg.slug).trim() || slugify(seg?.title) : slugify(seg?.title),
         title: seg?.title || '',
         description: seg?.description || '',
+        image: seg?.image?.asset?.url || null,
         servicesTitle: seg?.servicesTitle || 'Our Products & Services Include:',
         items: (seg?.services || [])
           .filter(s => s?.enabled !== false)
@@ -229,6 +230,11 @@ const Divisions = () => {
             >
               <div className="division-header">
                 <h2>{division.title}</h2>
+                {division.image && (
+                  <div className="division-image-wrapper">
+                    <img src={division.image} alt={division.title} />
+                  </div>
+                )}
                 <p className="division-description">{division.description}</p>
               </div>
               

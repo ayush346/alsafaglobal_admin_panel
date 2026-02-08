@@ -7,6 +7,9 @@ export const segmentsPageQuery = `
       title,
       slug,
       description,
+      image{
+        asset->{url}
+      },
       servicesTitle,
       services[]{
         text,

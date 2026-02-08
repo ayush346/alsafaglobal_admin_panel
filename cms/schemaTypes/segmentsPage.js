@@ -53,6 +53,13 @@ export default {
               type: 'text'
             },
             {
+              name: 'image',
+              title: 'Segment Image',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'An image representing this segment (displayed on the Divisions page).'
+            },
+            {
               name: 'servicesTitle',
               title: 'Services Section Heading',
               type: 'string',
