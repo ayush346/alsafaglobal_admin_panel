@@ -10,8 +10,8 @@ export const schemaTypes = [
   homePage,
   aboutPage,
   segmentsPage,
-  contactPage,
   productsPage,
+  contactPage,
 ]
 
   
