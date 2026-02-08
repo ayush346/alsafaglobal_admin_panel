@@ -22,7 +22,7 @@
 }
 
 .products-hero-content p {
-  font-size: 1.15rem;
+  font-size: var(--text-base);
   color: var(--text-secondary);
   max-width: 700px;
   margin: 0 auto;
