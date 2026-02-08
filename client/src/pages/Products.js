@@ -91,7 +91,7 @@ const Products = () => {
       if (++attempts < 10) setTimeout(tryScroll, 100);
     };
     setTimeout(tryScroll, 150);
-  }, [location.hash, productsData]);
+  }, [location.hash, location.key, productsData]);
 
   return (
     <div className="products-page">

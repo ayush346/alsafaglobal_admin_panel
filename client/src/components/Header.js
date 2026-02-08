@@ -200,7 +200,11 @@ const Header = () => {
                             >
                               {segments.map((seg) => (
                                 <li key={seg.slug}>
-                                  <Link to={`${item.path}#${seg.slug}`} className="nav-dropdown-link">
+                                  <Link
+                                    to={`${item.path}#${seg.slug}`}
+                                    className="nav-dropdown-link"
+                                    onClick={() => setSegmentsDropdownOpen(false)}
+                                  >
                                     {seg.title}
                                   </Link>
                                 </li>
@@ -224,7 +228,11 @@ const Header = () => {
                               <li className="nav-dropdown-title">List of Products</li>
                               {products.map((prod) => (
                                 <li key={prod.slug}>
-                                  <Link to={`${item.path}#${prod.slug}`} className="nav-dropdown-link">
+                                  <Link
+                                    to={`${item.path}#${prod.slug}`}
+                                    className="nav-dropdown-link"
+                                    onClick={() => setProductsDropdownOpen(false)}
+                                  >
                                     {prod.title}
                                   </Link>
                                 </li>

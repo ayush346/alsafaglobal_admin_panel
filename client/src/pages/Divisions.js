@@ -45,7 +45,7 @@ const Divisions = () => {
 
     // Start first attempt: wait 150ms for Framer Motion animations to settle
     setTimeout(attemptScroll, 150);
-  }, [location.hash, segmentsData]);
+  }, [location.hash, location.key, segmentsData]);
 
   useEffect(() => {
     client.fetch(segmentsPageQuery).then(setSegmentsData);
