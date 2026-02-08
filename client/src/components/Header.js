@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { client } from '../sanityClient';
@@ -24,8 +24,46 @@ const Header = () => {
   const [mobileSegmentsOpen, setMobileSegmentsOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { data: productsCms } = useContent(productsPageQuery);
+
+  // Direct scroll handler for dropdown links — bypasses React Router hash timing issues
+  const HEADER_OFFSET = 100;
+  const handleDropdownClick = useCallback((e, path, slug) => {
+    e.preventDefault();
+    setSegmentsDropdownOpen(false);
+    setProductsDropdownOpen(false);
+    setIsOpen(false);
+    setMobileSegmentsOpen(false);
+    setMobileProductsOpen(false);
+
+    const scrollToEl = () => {
+      let attempts = 0;
+      const tryScroll = () => {
+        const el = document.getElementById(slug);
+        if (el) {
+          requestAnimationFrame(() => {
+            const top = el.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+            window.scrollTo({ top, behavior: 'smooth' });
+          });
+          return;
+        }
+        if (++attempts < 15) setTimeout(tryScroll, 100);
+      };
+      setTimeout(tryScroll, 100);
+    };
+
+    if (location.pathname === path) {
+      // Already on the page — scroll directly
+      window.history.replaceState(null, '', `${path}#${slug}`);
+      scrollToEl();
+    } else {
+      // Navigate to the page, then scroll after render
+      navigate(`${path}#${slug}`);
+      scrollToEl();
+    }
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     // Fetch segments for Segments dropdown
@@ -200,13 +238,13 @@ const Header = () => {
                             >
                               {segments.map((seg) => (
                                 <li key={seg.slug}>
-                                  <Link
-                                    to={`${item.path}#${seg.slug}`}
+                                  <a
+                                    href={`${item.path}#${seg.slug}`}
                                     className="nav-dropdown-link"
-                                    onClick={() => setSegmentsDropdownOpen(false)}
+                                    onClick={(e) => handleDropdownClick(e, item.path, seg.slug)}
                                   >
                                     {seg.title}
-                                  </Link>
+                                  </a>
                                 </li>
                               ))}
                             </motion.ul>
@@ -228,13 +266,13 @@ const Header = () => {
                               <li className="nav-dropdown-title">List of Products</li>
                               {products.map((prod) => (
                                 <li key={prod.slug}>
-                                  <Link
-                                    to={`${item.path}#${prod.slug}`}
+                                  <a
+                                    href={`${item.path}#${prod.slug}`}
                                     className="nav-dropdown-link"
-                                    onClick={() => setProductsDropdownOpen(false)}
+                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
                                   >
                                     {prod.title}
-                                  </Link>
+                                  </a>
                                 </li>
                               ))}
                             </motion.ul>
@@ -354,13 +392,13 @@ const Header = () => {
                             <ul className="mobile-nav-sublist">
                               {segments.map((seg) => (
                                 <li key={seg.slug}>
-                                  <Link
-                                    to={`${item.path}#${seg.slug}`}
+                                  <a
+                                    href={`${item.path}#${seg.slug}`}
                                     className="mobile-nav-sublink"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={(e) => handleDropdownClick(e, item.path, seg.slug)}
                                   >
                                     {seg.title}
-                                  </Link>
+                                  </a>
                                 </li>
                               ))}
                             </ul>
@@ -391,13 +429,13 @@ const Header = () => {
                               <li className="mobile-dropdown-title">List of Products</li>
                               {products.map((prod) => (
                                 <li key={prod.slug}>
-                                  <Link
-                                    to={`${item.path}#${prod.slug}`}
+                                  <a
+                                    href={`${item.path}#${prod.slug}`}
                                     className="mobile-nav-sublink"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
                                   >
                                     {prod.title}
-                                  </Link>
+                                  </a>
                                 </li>
                               ))}
                             </ul>
