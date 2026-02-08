@@ -44,6 +44,16 @@
     <script defer src="https://cloud.umami.is/script.js" data-website-id="bd10d8b5-1a13-4430-b4cc-b14218e17aaf"></script>
     
     <title>Al Safa Global - Procurement & Supply Chain Solutions</title>
+    <!-- SPA redirect handler: restores URL after 404.html redirect -->
+    <script>
+      (function(){
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
