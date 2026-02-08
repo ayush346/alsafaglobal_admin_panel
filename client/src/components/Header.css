@@ -131,6 +131,8 @@
   color: inherit;
   text-decoration: none;
   font: inherit;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-chevron-btn {
@@ -141,6 +143,8 @@
   padding: 4px;
   border-radius: var(--radius-sm);
   transition: background 0.2s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-chevron-btn:hover {
