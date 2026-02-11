@@ -31,13 +31,6 @@ export default {
               type: 'string',
             },
             {
-              name: 'slug',
-              title: 'URL Slug',
-              type: 'slug',
-              description: 'URL-friendly identifier for the detail page. Click Generate.',
-              options: { source: 'title', maxLength: 96 },
-            },
-            {
               name: 'products',
               title: 'Products',
               description: 'Products in this group (e.g. Desktop computers, Laptops). Each product can have its own list of items.',
