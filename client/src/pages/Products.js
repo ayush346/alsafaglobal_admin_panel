@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
@@ -9,17 +9,32 @@ import './Products.css';
 
 const INITIAL_SHOW = 2;
 
+const slugify = (s) =>
+  (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
+
 const ProductGroup = ({ group }) => {
   const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
   const products = group.products || [];
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
+  const groupSlug = group.slug || slugify(group.title);
 
-  const slugify = (s) =>
-    (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking a button or link inside the card
+    if (e.target.closest('button') || e.target.closest('a')) return;
+    navigate(`/products/${groupSlug}`);
+  };
 
   return (
-    <div className="product-group-card" id={group.segmentSlug || slugify(group.title)}>
+    <div
+      className="product-group-card product-group-card--clickable"
+      id={group.segmentSlug || slugify(group.title)}
+      onClick={handleCardClick}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/products/${groupSlug}`); }}
+    >
       <h2>{group.title}</h2>
       <div className="products-grid">
         {visible.map((product, j) => (

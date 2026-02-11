@@ -80,12 +80,12 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Populate products from CMS (productGroups titles)
+    // Populate products from CMS (productGroups titles + slugs)
     const list = (productsCms?.productGroups || [])
       .filter((p) => p?.title)
       .map((p) => ({
         title: p?.title || '',
-        slug: p?.segmentSlug || slugify(p?.title)
+        slug: p?.slug || slugify(p?.title)
       }))
       .filter((p) => p.title && p.slug);
     setProducts(list);
@@ -263,16 +263,15 @@ const Header = () => {
                               exit={{ opacity: 0, y: -8 }}
                               transition={{ duration: 0.2 }}
                             >
-                              <li className="nav-dropdown-title">List of Products</li>
                               {products.map((prod) => (
                                 <li key={prod.slug}>
-                                  <a
-                                    href={`${item.path}#${prod.slug}`}
+                                  <Link
+                                    to={`/products/${prod.slug}`}
                                     className="nav-dropdown-link"
-                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
+                                    onClick={() => setProductsDropdownOpen(false)}
                                   >
                                     {prod.title}
-                                  </a>
+                                  </Link>
                                 </li>
                               ))}
                             </motion.ul>
@@ -426,16 +425,15 @@ const Header = () => {
                           </div>
                           {mobileProductsOpen && (
                             <ul className="mobile-nav-sublist">
-                              <li className="mobile-dropdown-title">List of Products</li>
                               {products.map((prod) => (
                                 <li key={prod.slug}>
-                                  <a
-                                    href={`${item.path}#${prod.slug}`}
+                                  <Link
+                                    to={`/products/${prod.slug}`}
                                     className="mobile-nav-sublink"
-                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
+                                    onClick={() => setIsOpen(false)}
                                   >
                                     {prod.title}
-                                  </a>
+                                  </Link>
                                 </li>
                               ))}
                             </ul>

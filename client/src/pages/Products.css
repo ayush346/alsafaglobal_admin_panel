@@ -59,6 +59,16 @@
   scroll-margin-top: 100px;
 }
 
+.product-group-card--clickable {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.product-group-card--clickable:hover {
+  box-shadow: 0 8px 28px rgba(30, 58, 138, 0.10);
+  transform: translateY(-3px);
+}
+
 .product-group-card h2 {
   font-size: 1.6rem;
   margin-bottom: 1rem;
