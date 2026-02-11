@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import Quote from './pages/Quote';
 import Products from './pages/Products';
 import ItemDetail from './pages/ItemDetail';
+import BrandDetail from './pages/BrandDetail';
 import './App.css';
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
             <Route path="/divisions" element={<Divisions />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/item/:slug" element={<ItemDetail />} />
+            <Route path="/products/item/:slug/brand/:brandIndex" element={<BrandDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/quote" element={<Quote />} />
           </Routes>

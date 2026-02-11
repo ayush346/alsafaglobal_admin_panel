@@ -94,6 +94,10 @@
   transform: translateY(-3px);
 }
 
+.item-brand-card--clickable {
+  cursor: pointer;
+}
+
 .item-brand-image {
   width: 100%;
   aspect-ratio: 3 / 2;

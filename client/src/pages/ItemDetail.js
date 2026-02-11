@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { client } from '../sanityClient';
 import { allItemsQuery } from '../queries/productsPageQuery';
@@ -10,6 +10,7 @@ const slugify = (s) =>
 
 const ItemDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +18,6 @@ const ItemDetail = () => {
     client
       .fetch(allItemsQuery)
       .then((data) => {
-        // Flatten all items from all groups and products
         const groups = data?.productGroups || [];
         let foundItem = null;
         for (const group of groups) {
@@ -33,14 +33,10 @@ const ItemDetail = () => {
           }
           if (foundItem) break;
         }
-        console.log('ItemDetail found:', JSON.stringify(foundItem, null, 2));
         setItem(foundItem);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error('ItemDetail fetch error:', err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, [slug]);
 
   if (loading) {
@@ -66,14 +62,12 @@ const ItemDetail = () => {
 
   return (
     <div className="item-detail-page">
-      {/* Hero */}
       <section className="item-detail-hero">
         <div className="container">
           <Link to="/products" className="item-back-link">&larr; Back to Products</Link>
         </div>
       </section>
 
-      {/* Brands */}
       <section className="item-detail-brands">
         <div className="container">
           <h2 className="item-brands-heading">Available Brands &amp; Models</h2>
@@ -82,7 +76,8 @@ const ItemDetail = () => {
               {brands.map((brand, i) => (
                 <motion.div
                   key={i}
-                  className="item-brand-card"
+                  className="item-brand-card item-brand-card--clickable"
+                  onClick={() => navigate(`/products/item/${slug}/brand/${i}`)}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.08 }}
@@ -99,12 +94,6 @@ const ItemDetail = () => {
                     )}
                     {brand.showModelName !== false && brand.modelName && (
                       <p className="item-brand-model">{brand.modelName}</p>
-                    )}
-                    {brand.showSpecification !== false && brand.specification && (
-                      <p className="item-brand-spec">{brand.specification}</p>
-                    )}
-                    {brand.showPrice !== false && brand.price && (
-                      <span className="item-brand-price">{brand.price}</span>
                     )}
                   </div>
                 </motion.div>
