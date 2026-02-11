@@ -24,27 +24,29 @@ export const productsPageQuery = `
 }
 `;
 
-export const itemBySlugQuery = `
+export const allItemsQuery = `
 *[_type == "productsPage"][0]{
-  "allItems": productGroups[].products[].items[]
-}.allItems[slug.current == $slug][0]{
-  title,
-  "slug": slug.current,
-  description,
-  image{
-    asset->{url}
-  },
-  brands[]{
-    brandImage{ asset->{url} },
-    showBrandImage,
-    brandName,
-    showBrandName,
-    modelName,
-    showModelName,
-    specification,
-    showSpecification,
-    price,
-    showPrice
+  productGroups[]{
+    products[]{
+      items[]{
+        title,
+        "slug": slug.current,
+        description,
+        image{ asset->{url} },
+        brands[]{
+          brandImage{ asset->{url} },
+          showBrandImage,
+          brandName,
+          showBrandName,
+          modelName,
+          showModelName,
+          specification,
+          showSpecification,
+          price,
+          showPrice
+        }
+      }
+    }
   }
 }
 `;

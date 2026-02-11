@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { client } from '../sanityClient';
-import { itemBySlugQuery } from '../queries/productsPageQuery';
+import { allItemsQuery } from '../queries/productsPageQuery';
 import './ItemDetail.css';
 
 const slugify = (s) =>
@@ -15,12 +15,32 @@ const ItemDetail = () => {
 
   useEffect(() => {
     client
-      .fetch(itemBySlugQuery, { slug })
+      .fetch(allItemsQuery)
       .then((data) => {
-        setItem(data);
+        // Flatten all items from all groups and products
+        const groups = data?.productGroups || [];
+        let foundItem = null;
+        for (const group of groups) {
+          for (const product of (group.products || [])) {
+            for (const it of (product.items || [])) {
+              const itSlug = it.slug || slugify(it.title);
+              if (itSlug === slug) {
+                foundItem = it;
+                break;
+              }
+            }
+            if (foundItem) break;
+          }
+          if (foundItem) break;
+        }
+        console.log('ItemDetail found:', JSON.stringify(foundItem, null, 2));
+        setItem(foundItem);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error('ItemDetail fetch error:', err);
+        setLoading(false);
+      });
   }, [slug]);
 
   if (loading) {
