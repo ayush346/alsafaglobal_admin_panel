@@ -9,12 +9,14 @@ import './Products.css';
 
 const INITIAL_SHOW = 2;
 
-// Normalize: trim whitespace, collapse inner spaces
-const normalizeBrand = (b) => (b || '').trim().replace(/\s+/g, ' ');
+// Normalize: trim, collapse spaces, strip invisible/zero-width chars
+const normalizeBrand = (b) => (b || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').trim().replace(/\s+/g, ' ');
+// Key for dedup: lowercase alphanumeric only
+const brandKey = (b) => normalizeBrand(b).toLowerCase().replace(/[^a-z0-9]/g, '');
 // Case-insensitive brand match against an array of brand names
 const brandMatch = (brandNames, brand) => {
-  const target = normalizeBrand(brand).toLowerCase();
-  return (brandNames || []).some(b => normalizeBrand(b).toLowerCase() === target);
+  const target = brandKey(brand);
+  return (brandNames || []).some(b => brandKey(b) === target);
 };
 
 const ProductGroup = ({ group, activeBrand }) => {
@@ -123,18 +125,18 @@ const Products = () => {
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
 
-  // Collect all unique brand names across every item (case-insensitive dedup)
+  // Collect all unique brand names across every item (aggressive dedup)
   const allBrands = React.useMemo(() => {
     if (!productsData?.productGroups) return [];
-    const seen = new Map(); // lowercased → display form (first occurrence wins)
+    const seen = new Map(); // brandKey → display form (first occurrence wins)
     productsData.productGroups.forEach(g =>
       (g.products || []).forEach(p =>
         (p.items || []).forEach(it =>
           (it.brandNames || []).forEach(raw => {
-            const normalized = normalizeBrand(raw);
-            if (!normalized) return;
-            const key = normalized.toLowerCase();
-            if (!seen.has(key)) seen.set(key, normalized);
+            const display = normalizeBrand(raw);
+            if (!display) return;
+            const key = brandKey(raw);
+            if (!seen.has(key)) seen.set(key, display);
           })
         )
       )
