@@ -14,6 +14,7 @@ const ItemDetail = () => {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filterBrand, setFilterBrand] = useState('all');
+  const [filterModel, setFilterModel] = useState('all');
 
   useEffect(() => {
     client
@@ -61,16 +62,20 @@ const ItemDetail = () => {
 
   const brands = item.brands || [];
 
-  // Get unique brand names for filter
+  // Get unique brand names and model names for filters
   const brandNames = [...new Set(brands.map(b => b.brandName).filter(Boolean))];
-  const filteredBrands = filterBrand === 'all'
-    ? brands
-    : brands.filter(b => b.brandName === filterBrand);
+  const modelNames = [...new Set(
+    brands
+      .filter(b => filterBrand === 'all' || b.brandName === filterBrand)
+      .map(b => b.modelName)
+      .filter(Boolean)
+  )];
 
   // We need the original index for navigation, so track it
   const filteredWithIndex = brands
     .map((b, i) => ({ ...b, _origIndex: i }))
-    .filter(b => filterBrand === 'all' || b.brandName === filterBrand);
+    .filter(b => filterBrand === 'all' || b.brandName === filterBrand)
+    .filter(b => filterModel === 'all' || b.modelName === filterModel);
 
   return (
     <div className="item-detail-page">
@@ -84,19 +89,34 @@ const ItemDetail = () => {
         <div className="container">
           <h2 className="item-brands-heading">Available Brands &amp; Models</h2>
 
-          {brandNames.length > 1 && (
-            <div className="item-brand-filter">
-              <label htmlFor="brand-filter">Filter by Brand:</label>
-              <select
-                id="brand-filter"
-                value={filterBrand}
-                onChange={(e) => setFilterBrand(e.target.value)}
-              >
-                <option value="all">All Brands</option>
-                {brandNames.map((name) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </select>
+          {brands.length > 0 && (
+            <div className="item-brand-filters">
+              <div className="item-brand-filter">
+                <label htmlFor="brand-filter">Brand:</label>
+                <select
+                  id="brand-filter"
+                  value={filterBrand}
+                  onChange={(e) => { setFilterBrand(e.target.value); setFilterModel('all'); }}
+                >
+                  <option value="all">All Brands</option>
+                  {brandNames.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="item-brand-filter">
+                <label htmlFor="model-filter">Model:</label>
+                <select
+                  id="model-filter"
+                  value={filterModel}
+                  onChange={(e) => setFilterModel(e.target.value)}
+                >
+                  <option value="all">All Models</option>
+                  {modelNames.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 
