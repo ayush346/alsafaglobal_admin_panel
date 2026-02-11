@@ -24,28 +24,24 @@ export const productsPageQuery = `
 }
 `;
 
-export const allItemsQuery = `
+export const allItemsRawQuery = `
 *[_type == "productsPage"][0]{
-  productGroups[]{
-    products[]{
-      items[]{
-        title,
-        "slug": slug.current,
-        description,
-        image{ asset->{url} },
-        brands[]{
-          brandImage{ asset->{url} },
-          showBrandImage,
-          brandName,
-          showBrandName,
-          modelName,
-          showModelName,
-          specification,
-          showSpecification,
-          price,
-          showPrice
-        }
-      }
+  "items": productGroups[].products[].items[]{
+    title,
+    "slug": slug.current,
+    description,
+    "imageUrl": image.asset->url,
+    "brands": brands[]{
+      "brandImageUrl": brandImage.asset->url,
+      showBrandImage,
+      brandName,
+      showBrandName,
+      modelName,
+      showModelName,
+      specification,
+      showSpecification,
+      price,
+      showPrice
     }
   }
 }

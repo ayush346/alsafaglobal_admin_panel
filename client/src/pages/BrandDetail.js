@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { client } from '../sanityClient';
-import { allItemsQuery } from '../queries/productsPageQuery';
+import { allItemsRawQuery } from '../queries/productsPageQuery';
 import './BrandDetail.css';
 
 const slugify = (s) =>
@@ -15,23 +15,13 @@ const BrandDetail = () => {
 
   useEffect(() => {
     client
-      .fetch(allItemsQuery)
+      .fetch(allItemsRawQuery)
       .then((data) => {
-        const groups = data?.productGroups || [];
-        let foundItem = null;
-        for (const group of groups) {
-          for (const product of (group.products || [])) {
-            for (const it of (product.items || [])) {
-              const itSlug = it.slug || slugify(it.title);
-              if (itSlug === slug) {
-                foundItem = it;
-                break;
-              }
-            }
-            if (foundItem) break;
-          }
-          if (foundItem) break;
-        }
+        const items = data?.items || [];
+        const foundItem = items.find(it => {
+          const itSlug = it.slug || slugify(it.title);
+          return itSlug === slug;
+        }) || null;
         const idx = parseInt(brandIndex, 10);
         const b = foundItem?.brands?.[idx] || null;
         setBrand(b);
@@ -71,9 +61,9 @@ const BrandDetail = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {brand.showBrandImage !== false && brand.brandImage?.asset?.url && (
+            {brand.showBrandImage !== false && brand.brandImageUrl && (
               <div className="brand-detail-image">
-                <img src={brand.brandImage.asset.url} alt={brand.brandName || 'Brand'} />
+                <img src={brand.brandImageUrl} alt={brand.brandName || 'Brand'} />
               </div>
             )}
 
