@@ -1,80 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import './Products.css';
 
-const INITIAL_SHOW = 2;
-
 const slugify = (s) =>
   (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
 
 const ProductGroup = ({ group }) => {
-  const [expanded, setExpanded] = useState(false);
   const navigate = useNavigate();
-  const products = group.products || [];
-  const hasMore = products.length > INITIAL_SHOW;
-  const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
   const groupSlug = group.slug || slugify(group.title);
 
-  const handleCardClick = (e) => {
-    // Don't navigate if clicking a button or link inside the card
-    if (e.target.closest('button') || e.target.closest('a')) return;
+  const handleCardClick = () => {
     navigate(`/products/${groupSlug}`);
   };
 
   return (
-    <div
+    <motion.div
       className="product-group-card product-group-card--clickable"
       id={group.segmentSlug || slugify(group.title)}
       onClick={handleCardClick}
       role="link"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/products/${groupSlug}`); }}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleCardClick(); }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      viewport={{ once: true }}
     >
       <h2>{group.title}</h2>
-      <div className="products-grid">
-        {visible.map((product, j) => (
-          <motion.div
-            key={j}
-            className="product-card"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: j * 0.1 }}
-            viewport={{ once: true }}
-          >
-            {product.image?.asset?.url && (
-              <div className="product-image-wrapper">
-                <img src={product.image.asset.url} alt={product.name} />
-              </div>
-            )}
-            <h3 className="product-name">{product.name}</h3>
-            {product.description && <p className="product-description">{product.description}</p>}
-          </motion.div>
-        ))}
-      </div>
-      <div className="product-group-actions">
-        {hasMore && (
-          <button
-            className="toggle-products-btn"
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded ? 'View Less' : `View More (${products.length - INITIAL_SHOW} more)`}
-          </button>
-        )}
-        {group.segmentSlug && (
-          <Link
-            to={`/divisions#${group.segmentSlug}`}
-            className="view-services-btn"
-          >
-            View Services
-          </Link>
-        )}
-      </div>
-    </div>
+      <span className="product-group-arrow">View Products &rarr;</span>
+    </motion.div>
   );
 };
 

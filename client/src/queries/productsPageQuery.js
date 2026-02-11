@@ -5,14 +5,7 @@ export const productsPageQuery = `
   productGroups[]{
     title,
     "slug": slug.current,
-    segmentSlug,
-    products[]{
-      name,
-      description,
-      image{
-        asset->{url}
-      }
-    }
+    segmentSlug
   }
 }
 `;
@@ -22,18 +15,18 @@ export const productGroupBySlugQuery = `
   title,
   "slug": slug.current,
   segmentSlug,
-  detailItems[]{
-    title,
-    description,
-    image{
-      asset->{url}
-    }
-  },
   products[]{
     name,
     description,
     image{
       asset->{url}
+    },
+    items[]{
+      title,
+      description,
+      image{
+        asset->{url}
+      }
     }
   }
 }

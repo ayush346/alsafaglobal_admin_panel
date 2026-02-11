@@ -71,10 +71,22 @@
 
 .product-group-card h2 {
   font-size: 1.6rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   color: var(--text-primary);
   font-weight: 700;
   text-align: center;
+}
+
+.product-group-arrow {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary-blue, #1e3a8a);
+  transition: color 0.2s;
+}
+
+.product-group-card--clickable:hover .product-group-arrow {
+  color: var(--primary-gold, #f59e0b);
 }
 
 /* view-services-btn styles moved below toggle-products-btn */

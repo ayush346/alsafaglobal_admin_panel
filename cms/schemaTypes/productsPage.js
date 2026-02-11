@@ -39,7 +39,8 @@ export default {
             },
             {
               name: 'products',
-              title: 'Products in Group',
+              title: 'Products',
+              description: 'Products in this group (e.g. Desktop computers, Laptops). Each product can have its own list of items.',
               type: 'array',
               of: [
                 {
@@ -48,25 +49,28 @@ export default {
                     { name: 'name', title: 'Product Name', type: 'string' },
                     { name: 'image', title: 'Product Image', type: 'image', options: { hotspot: true } },
                     { name: 'description', title: 'Product Description', type: 'text' },
-                  ],
-                },
-              ],
-            },
-            {
-              name: 'detailItems',
-              title: 'Detail Page Items',
-              description: 'Items shown when user clicks into this group (e.g. Desktop computers, Laptops, Servers). Each has an image, title, and description.',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    { name: 'title', title: 'Item Title', type: 'string' },
-                    { name: 'image', title: 'Item Image', type: 'image', options: { hotspot: true } },
-                    { name: 'description', title: 'Item Description', type: 'text' },
+                    {
+                      name: 'items',
+                      title: 'Items',
+                      description: 'Items under this product. Each has image, title, and description.',
+                      type: 'array',
+                      of: [
+                        {
+                          type: 'object',
+                          fields: [
+                            { name: 'title', title: 'Item Title', type: 'string' },
+                            { name: 'image', title: 'Item Image', type: 'image', options: { hotspot: true } },
+                            { name: 'description', title: 'Item Description', type: 'text' },
+                          ],
+                          preview: {
+                            select: { title: 'title', media: 'image' },
+                          },
+                        },
+                      ],
+                    },
                   ],
                   preview: {
-                    select: { title: 'title', media: 'image' },
+                    select: { title: 'name', media: 'image' },
                   },
                 },
               ],
