@@ -25,7 +25,9 @@ export const productsPageQuery = `
 `;
 
 export const itemBySlugQuery = `
-*[_type == "productsPage"][0].productGroups[].products[].items[slug.current == $slug][0]{
+*[_type == "productsPage"][0]{
+  "allItems": productGroups[].products[].items[]
+}.allItems[slug.current == $slug][0]{
   title,
   "slug": slug.current,
   description,
