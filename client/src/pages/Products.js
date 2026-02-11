@@ -11,6 +11,7 @@ const INITIAL_SHOW = 2;
 
 const ProductGroup = ({ group }) => {
   const [expanded, setExpanded] = useState(false);
+  const [expandedProduct, setExpandedProduct] = useState(null);
   const products = group.products || [];
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
@@ -25,11 +26,12 @@ const ProductGroup = ({ group }) => {
         {visible.map((product, j) => (
           <motion.div
             key={j}
-            className="product-card"
+            className={`product-card${product.items?.length > 0 ? ' product-card--has-items' : ''}`}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: j * 0.1 }}
             viewport={{ once: true }}
+            onClick={() => product.items?.length > 0 && setExpandedProduct(expandedProduct === j ? null : j)}
           >
             {product.image?.asset?.url && (
               <div className="product-image-wrapper">
@@ -39,8 +41,12 @@ const ProductGroup = ({ group }) => {
             <h3 className="product-name">{product.name}</h3>
             {product.description && <p className="product-description">{product.description}</p>}
             {product.items?.length > 0 && (
+              <span className="product-items-hint">
+                {expandedProduct === j ? 'Hide Items ▲' : `View ${product.items.length} Items ▼`}
+              </span>
+            )}
+            {product.items?.length > 0 && expandedProduct === j && (
               <div className="product-items">
-                <h4 className="product-items-title">Items</h4>
                 <div className="product-items-grid">
                   {product.items.map((item, k) => (
                     <div key={k} className="product-item-card">
