@@ -13,6 +13,7 @@ const ItemDetail = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [filterBrand, setFilterBrand] = useState('all');
 
   useEffect(() => {
     client
@@ -60,6 +61,17 @@ const ItemDetail = () => {
 
   const brands = item.brands || [];
 
+  // Get unique brand names for filter
+  const brandNames = [...new Set(brands.map(b => b.brandName).filter(Boolean))];
+  const filteredBrands = filterBrand === 'all'
+    ? brands
+    : brands.filter(b => b.brandName === filterBrand);
+
+  // We need the original index for navigation, so track it
+  const filteredWithIndex = brands
+    .map((b, i) => ({ ...b, _origIndex: i }))
+    .filter(b => filterBrand === 'all' || b.brandName === filterBrand);
+
   return (
     <div className="item-detail-page">
       <section className="item-detail-hero">
@@ -71,16 +83,33 @@ const ItemDetail = () => {
       <section className="item-detail-brands">
         <div className="container">
           <h2 className="item-brands-heading">Available Brands &amp; Models</h2>
-          {brands.length > 0 ? (
+
+          {brandNames.length > 1 && (
+            <div className="item-brand-filter">
+              <label htmlFor="brand-filter">Filter by Brand:</label>
+              <select
+                id="brand-filter"
+                value={filterBrand}
+                onChange={(e) => setFilterBrand(e.target.value)}
+              >
+                <option value="all">All Brands</option>
+                {brandNames.map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {filteredWithIndex.length > 0 ? (
             <div className="item-brands-grid">
-              {brands.map((brand, i) => (
+              {filteredWithIndex.map((brand) => (
                 <motion.div
-                  key={i}
+                  key={brand._origIndex}
                   className="item-brand-card item-brand-card--clickable"
-                  onClick={() => navigate(`/products/item/${slug}/brand/${i}`)}
+                  onClick={() => navigate(`/products/item/${slug}/brand/${brand._origIndex}`)}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  transition={{ duration: 0.4, delay: 0.05 }}
                   viewport={{ once: true }}
                 >
                   {brand.showBrandImage !== false && brand.brandImage?.asset?.url && (

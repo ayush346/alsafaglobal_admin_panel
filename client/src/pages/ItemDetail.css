@@ -70,6 +70,36 @@
   text-align: center;
 }
 
+.item-brand-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.item-brand-filter label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.item-brand-filter select {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba(30, 58, 138, 0.2);
+  border-radius: 8px;
+  background: var(--white, #fff);
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.item-brand-filter select:focus {
+  border-color: var(--primary-blue, #1e3a8a);
+}
+
 .item-brands-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
