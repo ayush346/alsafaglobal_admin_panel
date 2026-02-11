@@ -18,7 +18,7 @@ export const productsPageQuery = `
         image{
           asset->{url}
         },
-        "brandNames": brands[].brandName
+        "brandNames": array::unique(brands[].brandName)
       }
     }
   }

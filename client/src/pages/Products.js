@@ -9,6 +9,14 @@ import './Products.css';
 
 const INITIAL_SHOW = 2;
 
+// Normalize: trim whitespace, collapse inner spaces
+const normalizeBrand = (b) => (b || '').trim().replace(/\s+/g, ' ');
+// Case-insensitive brand match against an array of brand names
+const brandMatch = (brandNames, brand) => {
+  const target = normalizeBrand(brand).toLowerCase();
+  return (brandNames || []).some(b => normalizeBrand(b).toLowerCase() === target);
+};
+
 const ProductGroup = ({ group, activeBrand }) => {
   const [expanded, setExpanded] = useState(false);
   const [expandedProduct, setExpandedProduct] = useState(null);
@@ -17,7 +25,7 @@ const ProductGroup = ({ group, activeBrand }) => {
 
   // Filter products when a brand is selected
   const products = activeBrand
-    ? allProducts.filter(p => (p.items || []).some(it => (it.brandNames || []).includes(activeBrand)))
+    ? allProducts.filter(p => (p.items || []).some(it => brandMatch(it.brandNames, activeBrand)))
     : allProducts;
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
@@ -55,7 +63,7 @@ const ProductGroup = ({ group, activeBrand }) => {
               <div className="product-items">
                 <div className="product-items-grid">
                   {(activeBrand
-                    ? product.items.filter(it => (it.brandNames || []).includes(activeBrand))
+                    ? product.items.filter(it => brandMatch(it.brandNames, activeBrand))
                     : product.items
                   ).map((item, k) => (
                     <div
@@ -115,18 +123,23 @@ const Products = () => {
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
 
-  // Collect all unique brand names across every item
+  // Collect all unique brand names across every item (case-insensitive dedup)
   const allBrands = React.useMemo(() => {
     if (!productsData?.productGroups) return [];
-    const set = new Set();
+    const seen = new Map(); // lowercased → display form (first occurrence wins)
     productsData.productGroups.forEach(g =>
       (g.products || []).forEach(p =>
         (p.items || []).forEach(it =>
-          (it.brandNames || []).forEach(b => b && set.add(b))
+          (it.brandNames || []).forEach(raw => {
+            const normalized = normalizeBrand(raw);
+            if (!normalized) return;
+            const key = normalized.toLowerCase();
+            if (!seen.has(key)) seen.set(key, normalized);
+          })
         )
       )
     );
-    return [...set].sort();
+    return [...seen.values()].sort((a, b) => a.localeCompare(b));
   }, [productsData]);
 
   // Filter groups to only those with matching items when a brand is active
@@ -135,7 +148,7 @@ const Products = () => {
     if (!activeBrand) return productsData.productGroups;
     return productsData.productGroups.filter(g =>
       (g.products || []).some(p =>
-        (p.items || []).some(it => (it.brandNames || []).includes(activeBrand))
+        (p.items || []).some(it => brandMatch(it.brandNames, activeBrand))
       )
     );
   }, [productsData, activeBrand]);
