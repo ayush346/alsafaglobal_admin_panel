@@ -19,10 +19,14 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [segmentsDropdownOpen, setSegmentsDropdownOpen] = useState(false);
   const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
+  const [activeProductGroup, setActiveProductGroup] = useState(null);
+  const [activeProduct, setActiveProduct] = useState(null);
   const [segments, setSegments] = useState([]);
   const [products, setProducts] = useState([]);
   const [mobileSegmentsOpen, setMobileSegmentsOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileExpandedGroup, setMobileExpandedGroup] = useState(null);
+  const [mobileExpandedProduct, setMobileExpandedProduct] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -34,9 +38,13 @@ const Header = () => {
     e.preventDefault();
     setSegmentsDropdownOpen(false);
     setProductsDropdownOpen(false);
+    setActiveProductGroup(null);
+    setActiveProduct(null);
     setIsOpen(false);
     setMobileSegmentsOpen(false);
     setMobileProductsOpen(false);
+    setMobileExpandedGroup(null);
+    setMobileExpandedProduct(null);
 
     const scrollToEl = () => {
       let attempts = 0;
@@ -80,14 +88,25 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Populate products from CMS (productGroups titles)
+    // Populate products from CMS with full nested structure
     const list = (productsCms?.productGroups || [])
-      .filter((p) => p?.title)
-      .map((p) => ({
-        title: p?.title || '',
-        slug: p?.segmentSlug ? String(p.segmentSlug).trim() || slugify(p?.title) : slugify(p?.title)
+      .filter((g) => g?.title)
+      .map((g) => ({
+        title: g?.title || '',
+        slug: g?.segmentSlug ? String(g.segmentSlug).trim() || slugify(g?.title) : slugify(g?.title),
+        products: (g?.products || [])
+          .filter((p) => p?.name)
+          .map((p) => ({
+            name: p.name,
+            items: (p.items || [])
+              .filter((it) => it?.title)
+              .map((it) => ({
+                title: it.title,
+                slug: it.slug || slugify(it.title)
+              }))
+          }))
       }))
-      .filter((p) => p.title && p.slug);
+      .filter((g) => g.title && g.slug);
     setProducts(list);
   }, [productsCms]);
 
@@ -106,6 +125,8 @@ const Header = () => {
     setIsOpen(false);
     setMobileSegmentsOpen(false);
     setMobileProductsOpen(false);
+    setMobileExpandedGroup(null);
+    setMobileExpandedProduct(null);
   }, [location]);
 
   const navItems = [
@@ -252,27 +273,70 @@ const Header = () => {
                         </AnimatePresence>
                       )}
 
-                      {/* Products dropdown */}
+                      {/* Products dropdown — nested */}
                       {item.name === 'Products' && products.length > 0 && (
                         <AnimatePresence>
                           {productsDropdownOpen && (
                             <motion.ul
-                              className="nav-dropdown"
+                              className="nav-dropdown nav-dropdown--products"
                               initial={{ opacity: 0, y: -8 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -8 }}
                               transition={{ duration: 0.2 }}
                             >
-                              <li className="nav-dropdown-title">List of Products</li>
-                              {products.map((prod) => (
-                                <li key={prod.slug}>
+                              {products.map((group, gi) => (
+                                <li
+                                  key={group.slug}
+                                  className="nav-dropdown-group"
+                                  onMouseEnter={() => setActiveProductGroup(gi)}
+                                  onMouseLeave={() => { setActiveProductGroup(null); setActiveProduct(null); }}
+                                >
                                   <a
-                                    href={`${item.path}#${prod.slug}`}
-                                    className="nav-dropdown-link"
-                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
+                                    href={`${item.path}#${group.slug}`}
+                                    className="nav-dropdown-link nav-dropdown-link--parent"
+                                    onClick={(e) => handleDropdownClick(e, item.path, group.slug)}
                                   >
-                                    {prod.title}
+                                    {group.title}
+                                    {group.products.length > 0 && <FiChevronDown className="nav-nested-chevron" />}
                                   </a>
+                                  {/* Nested: products within group */}
+                                  {activeProductGroup === gi && group.products.length > 0 && (
+                                    <ul className="nav-subdropdown">
+                                      {group.products.map((prod, pi) => (
+                                        <li
+                                          key={pi}
+                                          className="nav-subdropdown-item"
+                                          onMouseEnter={() => setActiveProduct(pi)}
+                                          onMouseLeave={() => setActiveProduct(null)}
+                                        >
+                                          <span className="nav-subdropdown-link">
+                                            {prod.name}
+                                            {prod.items.length > 0 && <FiChevronDown className="nav-nested-chevron" />}
+                                          </span>
+                                          {/* Nested: items within product */}
+                                          {activeProduct === pi && prod.items.length > 0 && (
+                                            <ul className="nav-subdropdown nav-subdropdown--items">
+                                              {prod.items.map((it) => (
+                                                <li key={it.slug}>
+                                                  <Link
+                                                    to={`/products/item/${it.slug}`}
+                                                    className="nav-subdropdown-link"
+                                                    onClick={() => {
+                                                      setProductsDropdownOpen(false);
+                                                      setActiveProductGroup(null);
+                                                      setActiveProduct(null);
+                                                    }}
+                                                  >
+                                                    {it.title}
+                                                  </Link>
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          )}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
                                 </li>
                               ))}
                             </motion.ul>
@@ -426,16 +490,63 @@ const Header = () => {
                           </div>
                           {mobileProductsOpen && (
                             <ul className="mobile-nav-sublist">
-                              <li className="mobile-dropdown-title">List of Products</li>
-                              {products.map((prod) => (
-                                <li key={prod.slug}>
-                                  <a
-                                    href={`${item.path}#${prod.slug}`}
-                                    className="mobile-nav-sublink"
-                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
-                                  >
-                                    {prod.title}
-                                  </a>
+                              {products.map((group, gi) => (
+                                <li key={group.slug}>
+                                  <div className="mobile-nav-dropdown-header">
+                                    <a
+                                      href={`${item.path}#${group.slug}`}
+                                      className="mobile-nav-sublink"
+                                      onClick={(e) => handleDropdownClick(e, item.path, group.slug)}
+                                    >
+                                      {group.title}
+                                    </a>
+                                    {group.products.length > 0 && (
+                                      <span
+                                        className="mobile-chevron-btn mobile-chevron-btn--small"
+                                        onClick={() => setMobileExpandedGroup(mobileExpandedGroup === gi ? null : gi)}
+                                        role="button"
+                                        tabIndex={0}
+                                      >
+                                        <FiChevronDown className={`nav-chevron ${mobileExpandedGroup === gi ? 'open' : ''}`} />
+                                      </span>
+                                    )}
+                                  </div>
+                                  {mobileExpandedGroup === gi && group.products.length > 0 && (
+                                    <ul className="mobile-nav-sublist">
+                                      {group.products.map((prod, pi) => (
+                                        <li key={pi}>
+                                          <div className="mobile-nav-dropdown-header">
+                                            <span className="mobile-nav-sublink mobile-nav-sublink--product">{prod.name}</span>
+                                            {prod.items.length > 0 && (
+                                              <span
+                                                className="mobile-chevron-btn mobile-chevron-btn--small"
+                                                onClick={() => setMobileExpandedProduct(mobileExpandedProduct === `${gi}-${pi}` ? null : `${gi}-${pi}`)}
+                                                role="button"
+                                                tabIndex={0}
+                                              >
+                                                <FiChevronDown className={`nav-chevron ${mobileExpandedProduct === `${gi}-${pi}` ? 'open' : ''}`} />
+                                              </span>
+                                            )}
+                                          </div>
+                                          {mobileExpandedProduct === `${gi}-${pi}` && prod.items.length > 0 && (
+                                            <ul className="mobile-nav-sublist">
+                                              {prod.items.map((it) => (
+                                                <li key={it.slug}>
+                                                  <Link
+                                                    to={`/products/item/${it.slug}`}
+                                                    className="mobile-nav-sublink"
+                                                    onClick={() => setIsOpen(false)}
+                                                  >
+                                                    {it.title}
+                                                  </Link>
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          )}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
                                 </li>
                               ))}
                             </ul>
