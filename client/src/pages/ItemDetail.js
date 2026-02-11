@@ -70,22 +70,6 @@ const ItemDetail = () => {
       <section className="item-detail-hero">
         <div className="container">
           <Link to="/products" className="item-back-link">&larr; Back to Products</Link>
-          <motion.div
-            className="item-detail-hero-content"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {item.image?.asset?.url && (
-              <div className="item-detail-image">
-                <img src={item.image.asset.url} alt={item.title} />
-              </div>
-            )}
-            <div className="item-detail-info">
-              <h1>{item.title}</h1>
-              {item.description && <p>{item.description}</p>}
-            </div>
-          </motion.div>
         </div>
       </section>
 
