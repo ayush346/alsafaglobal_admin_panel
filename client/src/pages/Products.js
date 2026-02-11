@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
@@ -9,45 +9,18 @@ import './Products.css';
 
 const INITIAL_SHOW = 2;
 
-const slugify = (s) =>
-  (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
-
 const ProductGroup = ({ group }) => {
   const [expanded, setExpanded] = useState(false);
-  const navigate = useNavigate();
   const products = group.products || [];
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
 
-  const groupSlug = group.slug || slugify(group.title);
-
-  const handleGroupClick = () => {
-    navigate(`/products/${groupSlug}`);
-  };
+  const slugify = (s) =>
+    (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
 
   return (
     <div className="product-group-card" id={group.segmentSlug || slugify(group.title)}>
-      <div
-        className="product-group-clickable"
-        onClick={handleGroupClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter') handleGroupClick(); }}
-      >
-        {(group.groupImage?.asset?.url || products[0]?.image?.asset?.url) && (
-          <div className="product-group-image-wrapper">
-            <img
-              src={group.groupImage?.asset?.url || products[0]?.image?.asset?.url}
-              alt={group.title}
-            />
-          </div>
-        )}
-        <h2>{group.title}</h2>
-        {group.groupDescription && (
-          <p className="product-group-description">{group.groupDescription}</p>
-        )}
-        <span className="product-group-view-detail">View Details &rarr;</span>
-      </div>
+      <h2>{group.title}</h2>
       <div className="products-grid">
         {visible.map((product, j) => (
           <motion.div

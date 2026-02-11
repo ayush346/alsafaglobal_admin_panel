@@ -80,15 +80,12 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Populate products from CMS (productGroups with subcategories)
+    // Populate products from CMS (productGroups titles)
     const list = (productsCms?.productGroups || [])
       .filter((p) => p?.title)
       .map((p) => ({
         title: p?.title || '',
-        slug: p?.slug || slugify(p?.title),
-        subcategories: (p?.subcategories || []).map((sub) => ({
-          title: sub?.title || '',
-        })),
+        slug: p?.segmentSlug || slugify(p?.title)
       }))
       .filter((p) => p.title && p.slug);
     setProducts(list);
@@ -260,36 +257,22 @@ const Header = () => {
                         <AnimatePresence>
                           {productsDropdownOpen && (
                             <motion.ul
-                              className="nav-dropdown nav-dropdown-products"
+                              className="nav-dropdown"
                               initial={{ opacity: 0, y: -8 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -8 }}
                               transition={{ duration: 0.2 }}
                             >
+                              <li className="nav-dropdown-title">List of Products</li>
                               {products.map((prod) => (
-                                <li key={prod.slug} className="nav-dropdown-group">
-                                  <Link
-                                    to={`/products/${prod.slug}`}
-                                    className="nav-dropdown-link nav-dropdown-group-title"
-                                    onClick={() => { setProductsDropdownOpen(false); }}
+                                <li key={prod.slug}>
+                                  <a
+                                    href={`${item.path}#${prod.slug}`}
+                                    className="nav-dropdown-link"
+                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
                                   >
                                     {prod.title}
-                                  </Link>
-                                  {prod.subcategories && prod.subcategories.length > 0 && (
-                                    <ul className="nav-dropdown-sublist">
-                                      {prod.subcategories.map((sub, idx) => (
-                                        <li key={idx}>
-                                          <Link
-                                            to={`/products/${prod.slug}`}
-                                            className="nav-dropdown-sublink"
-                                            onClick={() => { setProductsDropdownOpen(false); }}
-                                          >
-                                            {sub.title}
-                                          </Link>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
+                                  </a>
                                 </li>
                               ))}
                             </motion.ul>
@@ -443,30 +426,16 @@ const Header = () => {
                           </div>
                           {mobileProductsOpen && (
                             <ul className="mobile-nav-sublist">
+                              <li className="mobile-dropdown-title">List of Products</li>
                               {products.map((prod) => (
-                                <li key={prod.slug} className="mobile-nav-product-group">
-                                  <Link
-                                    to={`/products/${prod.slug}`}
-                                    className="mobile-nav-sublink mobile-nav-sublink-group"
-                                    onClick={() => setIsOpen(false)}
+                                <li key={prod.slug}>
+                                  <a
+                                    href={`${item.path}#${prod.slug}`}
+                                    className="mobile-nav-sublink"
+                                    onClick={(e) => handleDropdownClick(e, item.path, prod.slug)}
                                   >
                                     {prod.title}
-                                  </Link>
-                                  {prod.subcategories && prod.subcategories.length > 0 && (
-                                    <ul className="mobile-nav-sub-sublist">
-                                      {prod.subcategories.map((sub, idx) => (
-                                        <li key={idx}>
-                                          <Link
-                                            to={`/products/${prod.slug}`}
-                                            className="mobile-nav-sub-sublink"
-                                            onClick={() => setIsOpen(false)}
-                                          >
-                                            {sub.title}
-                                          </Link>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
+                                  </a>
                                 </li>
                               ))}
                             </ul>
