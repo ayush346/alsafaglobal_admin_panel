@@ -4,13 +4,51 @@ export const productsPageQuery = `
   intro,
   productGroups[]{
     title,
+    "slug": slug.current,
     segmentSlug,
+    groupDescription,
+    groupImage{
+      asset->{url}
+    },
+    subcategories[]{
+      title,
+      description,
+      image{
+        asset->{url}
+      }
+    },
     products[]{
       name,
       description,
       image{
         asset->{url}
       }
+    }
+  }
+}
+`;
+
+export const productGroupBySlugQuery = `
+*[_type == "productsPage"][0].productGroups[slug.current == $slug][0]{
+  title,
+  "slug": slug.current,
+  segmentSlug,
+  groupDescription,
+  groupImage{
+    asset->{url}
+  },
+  subcategories[]{
+    title,
+    description,
+    image{
+      asset->{url}
+    }
+  },
+  products[]{
+    name,
+    description,
+    image{
+      asset->{url}
     }
   }
 }
