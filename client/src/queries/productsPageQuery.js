@@ -10,6 +10,13 @@ export const productsPageQuery = `
       description,
       image{
         asset->{url}
+      },
+      items[]{
+        title,
+        description,
+        image{
+          asset->{url}
+        }
       }
     }
   }

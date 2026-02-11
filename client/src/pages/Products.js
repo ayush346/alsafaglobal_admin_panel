@@ -38,6 +38,24 @@ const ProductGroup = ({ group }) => {
             )}
             <h3 className="product-name">{product.name}</h3>
             {product.description && <p className="product-description">{product.description}</p>}
+            {product.items?.length > 0 && (
+              <div className="product-items">
+                <h4 className="product-items-title">Items</h4>
+                <div className="product-items-grid">
+                  {product.items.map((item, k) => (
+                    <div key={k} className="product-item-card">
+                      {item.image?.asset?.url && (
+                        <div className="product-item-image">
+                          <img src={item.image.asset.url} alt={item.title} />
+                        </div>
+                      )}
+                      <span className="product-item-name">{item.title}</span>
+                      {item.description && <p className="product-item-desc">{item.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
