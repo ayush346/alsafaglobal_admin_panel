@@ -3,10 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowLeft } from 'react-icons/fi';
 import { client } from '../sanityClient';
-import { productGroupBySlugQuery } from '../queries/productsPageQuery';
+import { productGroupBySlugQuery, productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
 import { highlightBrand } from '../components/BrandText';
 import './ProductDetail.css';
+
+const slugify = (s) =>
+  (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'group';
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -19,7 +22,14 @@ const ProductDetail = () => {
     Promise.all([
       client.fetch(productGroupBySlugQuery, { slug }),
       client.fetch(homePageQuery),
-    ]).then(([groupData, home]) => {
+      client.fetch(productsPageQuery),
+    ]).then(([groupData, home, allProducts]) => {
+      // If GROQ slug match failed, try client-side slugified title match
+      if (!groupData && allProducts?.productGroups) {
+        groupData = allProducts.productGroups.find(
+          (g) => slugify(g.title) === slug || g.slug === slug
+        ) || null;
+      }
       setGroup(groupData);
       setHomeData(home);
       setLoading(false);

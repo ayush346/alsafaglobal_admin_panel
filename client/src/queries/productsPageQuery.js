@@ -4,7 +4,7 @@ export const productsPageQuery = `
   intro,
   productGroups[]{
     title,
-    "slug": slug.current,
+    "slug": coalesce(slug.current, lower(title)),
     segmentSlug,
     groupDescription,
     groupImage{
@@ -29,9 +29,9 @@ export const productsPageQuery = `
 `;
 
 export const productGroupBySlugQuery = `
-*[_type == "productsPage"][0].productGroups[slug.current == $slug][0]{
+*[_type == "productsPage"][0].productGroups[slug.current == $slug || lower(title) == $slug][0]{
   title,
-  "slug": slug.current,
+  "slug": coalesce(slug.current, lower(title)),
   segmentSlug,
   groupDescription,
   groupImage{

@@ -34,9 +34,8 @@ export default {
               name: 'slug',
               title: 'URL Slug',
               type: 'slug',
-              description: 'Used in the URL for this product group detail page (e.g. /products/office-it-products).',
+              description: 'Optional. Auto-generated from title if left empty. Used in the URL for the detail page.',
               options: { source: 'title', maxLength: 96 },
-              validation: (Rule) => Rule.required(),
             },
             {
               name: 'groupImage',

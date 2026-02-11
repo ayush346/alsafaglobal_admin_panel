@@ -34,9 +34,12 @@ const ProductGroup = ({ group }) => {
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter') handleGroupClick(); }}
       >
-        {group.groupImage?.asset?.url && (
+        {(group.groupImage?.asset?.url || products[0]?.image?.asset?.url) && (
           <div className="product-group-image-wrapper">
-            <img src={group.groupImage.asset.url} alt={group.title} />
+            <img
+              src={group.groupImage?.asset?.url || products[0]?.image?.asset?.url}
+              alt={group.title}
+            />
           </div>
         )}
         <h2>{group.title}</h2>
