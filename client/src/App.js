@@ -10,6 +10,7 @@ import Divisions from './pages/Divisions';
 import Contact from './pages/Contact';
 import Quote from './pages/Quote';
 import Products from './pages/Products';
+import ItemDetail from './pages/ItemDetail';
 import './App.css';
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/divisions" element={<Divisions />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/products/item/:slug" element={<ItemDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/quote" element={<Quote />} />
           </Routes>

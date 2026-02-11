@@ -45,15 +45,48 @@ export default {
                     {
                       name: 'items',
                       title: 'Items',
-                      description: 'Items under this product. Each has image, title, and description.',
+                      description: 'Items under this product. Each has image, title, description, and brands.',
                       type: 'array',
                       of: [
                         {
                           type: 'object',
                           fields: [
                             { name: 'title', title: 'Item Title', type: 'string' },
+                            {
+                              name: 'slug',
+                              title: 'URL Slug',
+                              type: 'slug',
+                              description: 'URL-friendly identifier. Click Generate.',
+                              options: { source: 'title', maxLength: 96 },
+                            },
                             { name: 'image', title: 'Item Image', type: 'image', options: { hotspot: true } },
                             { name: 'description', title: 'Item Description', type: 'text' },
+                            {
+                              name: 'brands',
+                              title: 'Brands / Models',
+                              description: 'Different brands and models for this item.',
+                              type: 'array',
+                              of: [
+                                {
+                                  type: 'object',
+                                  fields: [
+                                    { name: 'brandImage', title: 'Brand Image', type: 'image', options: { hotspot: true } },
+                                    { name: 'showBrandImage', title: 'Show Brand Image', type: 'boolean', initialValue: true },
+                                    { name: 'brandName', title: 'Brand Name', type: 'string' },
+                                    { name: 'showBrandName', title: 'Show Brand Name', type: 'boolean', initialValue: true },
+                                    { name: 'modelName', title: 'Model Name', type: 'string' },
+                                    { name: 'showModelName', title: 'Show Model Name', type: 'boolean', initialValue: true },
+                                    { name: 'specification', title: 'Specification', type: 'text' },
+                                    { name: 'showSpecification', title: 'Show Specification', type: 'boolean', initialValue: true },
+                                    { name: 'price', title: 'Price', type: 'string' },
+                                    { name: 'showPrice', title: 'Show Price', type: 'boolean', initialValue: true },
+                                  ],
+                                  preview: {
+                                    select: { title: 'brandName', subtitle: 'modelName', media: 'brandImage' },
+                                  },
+                                },
+                              ],
+                            },
                           ],
                           preview: {
                             select: { title: 'title', media: 'image' },

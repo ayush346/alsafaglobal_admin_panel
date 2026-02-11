@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { client } from '../sanityClient';
 import { productsPageQuery } from '../queries/productsPageQuery';
 import { homePageQuery } from '../queries/homePageQuery';
@@ -12,6 +12,7 @@ const INITIAL_SHOW = 2;
 const ProductGroup = ({ group }) => {
   const [expanded, setExpanded] = useState(false);
   const [expandedProduct, setExpandedProduct] = useState(null);
+  const navigate = useNavigate();
   const products = group.products || [];
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
@@ -49,7 +50,15 @@ const ProductGroup = ({ group }) => {
               <div className="product-items">
                 <div className="product-items-grid">
                   {product.items.map((item, k) => (
-                    <div key={k} className="product-item-card">
+                    <div
+                      key={k}
+                      className="product-item-card product-item-card--clickable"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const itemSlug = item.slug || slugify(item.title);
+                        navigate(`/products/item/${itemSlug}`);
+                      }}
+                    >
                       {item.image?.asset?.url && (
                         <div className="product-item-image">
                           <img src={item.image.asset.url} alt={item.title} />
