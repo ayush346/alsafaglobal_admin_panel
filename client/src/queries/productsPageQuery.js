@@ -17,7 +17,8 @@ export const productsPageQuery = `
         description,
         image{
           asset->{url}
-        }
+        },
+        "brandNames": brands[].brandName
       }
     }
   }

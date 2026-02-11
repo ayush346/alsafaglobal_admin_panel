@@ -9,11 +9,16 @@ import './Products.css';
 
 const INITIAL_SHOW = 2;
 
-const ProductGroup = ({ group }) => {
+const ProductGroup = ({ group, activeBrand }) => {
   const [expanded, setExpanded] = useState(false);
   const [expandedProduct, setExpandedProduct] = useState(null);
   const navigate = useNavigate();
-  const products = group.products || [];
+  const allProducts = group.products || [];
+
+  // Filter products when a brand is selected
+  const products = activeBrand
+    ? allProducts.filter(p => (p.items || []).some(it => (it.brandNames || []).includes(activeBrand)))
+    : allProducts;
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
 
@@ -46,10 +51,13 @@ const ProductGroup = ({ group }) => {
                 {expandedProduct === j ? 'Hide Items ▲' : `View ${product.items.length} Items ▼`}
               </span>
             )}
-            {product.items?.length > 0 && expandedProduct === j && (
+            {product.items?.length > 0 && (expandedProduct === j || activeBrand) && (
               <div className="product-items">
                 <div className="product-items-grid">
-                  {product.items.map((item, k) => (
+                  {(activeBrand
+                    ? product.items.filter(it => (it.brandNames || []).includes(activeBrand))
+                    : product.items
+                  ).map((item, k) => (
                     <div
                       key={k}
                       className="product-item-card product-item-card--clickable"
@@ -100,11 +108,37 @@ const Products = () => {
   const location = useLocation();
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
+  const [activeBrand, setActiveBrand] = useState('');
 
   useEffect(() => {
     client.fetch(productsPageQuery).then(setProductsData);
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
+
+  // Collect all unique brand names across every item
+  const allBrands = React.useMemo(() => {
+    if (!productsData?.productGroups) return [];
+    const set = new Set();
+    productsData.productGroups.forEach(g =>
+      (g.products || []).forEach(p =>
+        (p.items || []).forEach(it =>
+          (it.brandNames || []).forEach(b => b && set.add(b))
+        )
+      )
+    );
+    return [...set].sort();
+  }, [productsData]);
+
+  // Filter groups to only those with matching items when a brand is active
+  const displayedGroups = React.useMemo(() => {
+    if (!productsData?.productGroups) return [];
+    if (!activeBrand) return productsData.productGroups;
+    return productsData.productGroups.filter(g =>
+      (g.products || []).some(p =>
+        (p.items || []).some(it => (it.brandNames || []).includes(activeBrand))
+      )
+    );
+  }, [productsData, activeBrand]);
 
   // Hash scroll logic
   useEffect(() => {
@@ -153,15 +187,43 @@ const Products = () => {
         </div>
       </section>
 
+      {/* Brand Filter */}
+      {allBrands.length > 0 && (
+        <section className="products-brand-filter">
+          <div className="container">
+            <div className="brand-filter-bar">
+              <span className="brand-filter-label">Filter by Brand:</span>
+              <div className="brand-filter-options">
+                <button
+                  className={`brand-filter-btn${!activeBrand ? ' brand-filter-btn--active' : ''}`}
+                  onClick={() => setActiveBrand('')}
+                >
+                  All
+                </button>
+                {allBrands.map(b => (
+                  <button
+                    key={b}
+                    className={`brand-filter-btn${activeBrand === b ? ' brand-filter-btn--active' : ''}`}
+                    onClick={() => setActiveBrand(activeBrand === b ? '' : b)}
+                  >
+                    {b}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Product Groups Section */}
       <section className="products-groups">
         <div className="container">
-          {Array.isArray(productsData?.productGroups) && productsData.productGroups.length > 0 ? (
-            productsData.productGroups.map((group, i) => (
-              <ProductGroup key={i} group={group} />
+          {displayedGroups.length > 0 ? (
+            displayedGroups.map((group, i) => (
+              <ProductGroup key={i} group={group} activeBrand={activeBrand} />
             ))
           ) : (
-            <div className="no-products">No product groups available yet.</div>
+            <div className="no-products">{activeBrand ? `No products found for "${activeBrand}".` : 'No product groups available yet.'}</div>
           )}
         </div>
       </section>
