@@ -25,7 +25,6 @@ const ItemDetail = () => {
           const itSlug = it.slug || slugify(it.title);
           return itSlug === slug;
         }) || null;
-        console.log('ItemDetail slug:', slug, 'found:', JSON.stringify(foundItem, null, 2));
         setItem(foundItem);
         setLoading(false);
       })
