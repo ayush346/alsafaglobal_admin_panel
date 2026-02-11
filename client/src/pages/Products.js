@@ -9,26 +9,11 @@ import './Products.css';
 
 const INITIAL_SHOW = 2;
 
-// Normalize: trim, collapse spaces, strip invisible/zero-width chars
-const normalizeBrand = (b) => (b || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').trim().replace(/\s+/g, ' ');
-// Key for dedup: lowercase alphanumeric only
-const brandKey = (b) => normalizeBrand(b).toLowerCase().replace(/[^a-z0-9]/g, '');
-// Case-insensitive brand match against an array of brand names
-const brandMatch = (brandNames, brand) => {
-  const target = brandKey(brand);
-  return (brandNames || []).some(b => brandKey(b) === target);
-};
-
-const ProductGroup = ({ group, activeBrand }) => {
+const ProductGroup = ({ group }) => {
   const [expanded, setExpanded] = useState(false);
   const [expandedProduct, setExpandedProduct] = useState(null);
   const navigate = useNavigate();
-  const allProducts = group.products || [];
-
-  // Filter products when a brand is selected
-  const products = activeBrand
-    ? allProducts.filter(p => (p.items || []).some(it => brandMatch(it.brandNames, activeBrand)))
-    : allProducts;
+  const products = group.products || [];
   const hasMore = products.length > INITIAL_SHOW;
   const visible = expanded ? products : products.slice(0, INITIAL_SHOW);
 
@@ -61,13 +46,10 @@ const ProductGroup = ({ group, activeBrand }) => {
                 {expandedProduct === j ? 'Hide Items ▲' : `View ${product.items.length} Items ▼`}
               </span>
             )}
-            {product.items?.length > 0 && (expandedProduct === j || activeBrand) && (
+            {product.items?.length > 0 && expandedProduct === j && (
               <div className="product-items">
                 <div className="product-items-grid">
-                  {(activeBrand
-                    ? product.items.filter(it => brandMatch(it.brandNames, activeBrand))
-                    : product.items
-                  ).map((item, k) => (
+                  {product.items.map((item, k) => (
                     <div
                       key={k}
                       className="product-item-card product-item-card--clickable"
@@ -118,42 +100,11 @@ const Products = () => {
   const location = useLocation();
   const [productsData, setProductsData] = useState(null);
   const [homeData, setHomeData] = useState(null);
-  const [activeBrand, setActiveBrand] = useState('');
 
   useEffect(() => {
     client.fetch(productsPageQuery).then(setProductsData);
     client.fetch(homePageQuery).then(setHomeData);
   }, []);
-
-  // Collect all unique brand names across every item (aggressive dedup)
-  const allBrands = React.useMemo(() => {
-    if (!productsData?.productGroups) return [];
-    const seen = new Map(); // brandKey → display form (first occurrence wins)
-    productsData.productGroups.forEach(g =>
-      (g.products || []).forEach(p =>
-        (p.items || []).forEach(it =>
-          (it.brandNames || []).forEach(raw => {
-            const display = normalizeBrand(raw);
-            if (!display) return;
-            const key = brandKey(raw);
-            if (!seen.has(key)) seen.set(key, display);
-          })
-        )
-      )
-    );
-    return [...seen.values()].sort((a, b) => a.localeCompare(b));
-  }, [productsData]);
-
-  // Filter groups to only those with matching items when a brand is active
-  const displayedGroups = React.useMemo(() => {
-    if (!productsData?.productGroups) return [];
-    if (!activeBrand) return productsData.productGroups;
-    return productsData.productGroups.filter(g =>
-      (g.products || []).some(p =>
-        (p.items || []).some(it => brandMatch(it.brandNames, activeBrand))
-      )
-    );
-  }, [productsData, activeBrand]);
 
   // Hash scroll logic
   useEffect(() => {
@@ -202,43 +153,15 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Brand Filter */}
-      {allBrands.length > 0 && (
-        <section className="products-brand-filter">
-          <div className="container">
-            <div className="brand-filter-bar">
-              <span className="brand-filter-label">Filter by Brand:</span>
-              <div className="brand-filter-options">
-                <button
-                  className={`brand-filter-btn${!activeBrand ? ' brand-filter-btn--active' : ''}`}
-                  onClick={() => setActiveBrand('')}
-                >
-                  All
-                </button>
-                {allBrands.map(b => (
-                  <button
-                    key={b}
-                    className={`brand-filter-btn${activeBrand === b ? ' brand-filter-btn--active' : ''}`}
-                    onClick={() => setActiveBrand(activeBrand === b ? '' : b)}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Product Groups Section */}
       <section className="products-groups">
         <div className="container">
-          {displayedGroups.length > 0 ? (
-            displayedGroups.map((group, i) => (
-              <ProductGroup key={i} group={group} activeBrand={activeBrand} />
+          {Array.isArray(productsData?.productGroups) && productsData.productGroups.length > 0 ? (
+            productsData.productGroups.map((group, i) => (
+              <ProductGroup key={i} group={group} />
             ))
           ) : (
-            <div className="no-products">{activeBrand ? `No products found for "${activeBrand}".` : 'No product groups available yet.'}</div>
+            <div className="no-products">No product groups available yet.</div>
           )}
         </div>
       </section>
