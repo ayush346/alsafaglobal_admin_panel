@@ -22,6 +22,13 @@ export const productGroupBySlugQuery = `
   title,
   "slug": slug.current,
   segmentSlug,
+  detailItems[]{
+    title,
+    description,
+    image{
+      asset->{url}
+    }
+  },
   products[]{
     name,
     description,

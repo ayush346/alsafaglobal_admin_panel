@@ -65,7 +65,7 @@ const ProductDetail = () => {
     );
   }
 
-  const products = group.products || [];
+  const detailItems = group.detailItems || [];
 
   return (
     <div className="product-detail-page">
@@ -94,12 +94,12 @@ const ProductDetail = () => {
         </div>
       </section>
 
-      {/* Product Listing */}
+      {/* Detail Items */}
       <section className="pd-products">
         <div className="container">
-          {products.length > 0 ? (
+          {detailItems.length > 0 ? (
             <div className="pd-grid">
-              {products.map((product, i) => (
+              {detailItems.map((item, i) => (
                 <motion.div
                   key={i}
                   className="pd-card"
@@ -108,9 +108,9 @@ const ProductDetail = () => {
                   transition={{ duration: 0.45, delay: i * 0.07 }}
                   viewport={{ once: true }}
                 >
-                  {product.image?.asset?.url ? (
+                  {item.image?.asset?.url ? (
                     <div className="pd-card-image">
-                      <img src={product.image.asset.url} alt={product.name} />
+                      <img src={item.image.asset.url} alt={item.title} />
                     </div>
                   ) : (
                     <div className="pd-card-image pd-card-image--placeholder">
@@ -118,15 +118,15 @@ const ProductDetail = () => {
                     </div>
                   )}
                   <div className="pd-card-body">
-                    <h3>{product.name}</h3>
-                    {product.description && <p>{product.description}</p>}
+                    <h3>{item.title}</h3>
+                    {item.description && <p>{item.description}</p>}
                   </div>
                 </motion.div>
               ))}
             </div>
           ) : (
             <div className="pd-empty">
-              <p>No products have been added to this group yet.</p>
+              <p>No items have been added to this group yet. Add them from the CMS.</p>
               <Link to="/products" className="pd-back-btn">
                 <FiArrowLeft /> Back to Products
               </Link>
